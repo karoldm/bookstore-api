@@ -1,0 +1,38 @@
+package com.karoldm.bookstore.entities;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDate;
+import java.util.UUID;
+
+@Entity
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class Book {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @Column
+    private String title;
+    @Column
+    private String resume;
+    @Column
+    private LocalDate releasedAt;
+    @Column
+    private String author;
+    @Column
+    private boolean available;
+    @Column
+    private int rating;
+
+    @ManyToOne
+    @JoinColumn(name = "store_id")
+    private Store store;
+
+}
