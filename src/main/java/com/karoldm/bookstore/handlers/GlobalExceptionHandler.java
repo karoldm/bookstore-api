@@ -1,21 +1,20 @@
 package com.karoldm.bookstore.handlers;
 
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.karoldm.bookstore.exceptions.InvalidRoleException;
-import com.karoldm.bookstore.exceptions.StoreAlreadyExist;
-import com.karoldm.bookstore.exceptions.UserNotFoundException;
-import com.karoldm.bookstore.exceptions.UsernameAlreadyExist;
+import com.karoldm.bookstore.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.net.URI;
 
 @ControllerAdvice
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidRoleException.class)
     private ProblemDetail errorInvalidRole(InvalidRoleException ex) {
@@ -63,11 +62,45 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(JWTVerificationException.class)
-    private ProblemDetail errorBadCredentials(JWTVerificationException ex) {
+    private ProblemDetail errorJWTVerification(JWTVerificationException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN,
+                ex.getMessage());
+        problemDetail.setTitle("Token invalid error");
+        problemDetail.setType(URI.create("http://localhost/9000/doc/token-errors"));
+        return problemDetail;
+    }
+
+    @ExceptionHandler(JWTDecodeException.class)
+    private ProblemDetail errorJWTDecode(JWTDecodeException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED,
                 ex.getMessage());
         problemDetail.setTitle("Token invalid error");
         problemDetail.setType(URI.create("http://localhost/9000/doc/token-errors"));
+        return problemDetail;
+    }
+
+    @ExceptionHandler(StoreNotFoundException.class)
+    private ProblemDetail errorStoreNotFound(StoreNotFoundException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND,
+                ex.getMessage());
+        problemDetail.setTitle("Store not found error");
+        problemDetail.setType(URI.create("http://localhost:9000/doc/not-found-errors"));
+        return problemDetail;
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    private ProblemDetail errorMehtodArgumentNotValid(MethodArgumentNotValidException ex) {
+        String errorMessage = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .findFirst()
+                .map(FieldError::getDefaultMessage)
+                .orElse("Validation failed");
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
+                errorMessage);
+        problemDetail.setTitle("Invalid request body");
+        problemDetail.setType(URI.create("http://localhost:9000/doc/bad-request-errors"));
         return problemDetail;
     }
 }
