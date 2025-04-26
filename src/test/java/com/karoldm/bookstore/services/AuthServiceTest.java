@@ -1,9 +1,9 @@
 package com.karoldm.bookstore.services;
 
-import com.karoldm.bookstore.dto.LoginRequestDTO;
-import com.karoldm.bookstore.dto.RegisterStoreDTO;
-import com.karoldm.bookstore.dto.RegisterUserDTO;
-import com.karoldm.bookstore.dto.ResponseAuthDTO;
+import com.karoldm.bookstore.dto.requests.LoginRequestDTO;
+import com.karoldm.bookstore.dto.requests.RegisterStoreDTO;
+import com.karoldm.bookstore.dto.requests.RegisterUserDTO;
+import com.karoldm.bookstore.dto.responses.ResponseAuthDTO;
 import com.karoldm.bookstore.entities.Admin;
 import com.karoldm.bookstore.entities.Store;
 import com.karoldm.bookstore.enums.Roles;
@@ -84,7 +84,7 @@ public class AuthServiceTest {
     @Nested
     class RegisterTests {
         @Test
-        void shouldThrowUserAlreadyExist() {
+        void mustThrowUserAlreadyExist() {
             when(userRepository.findByUsername(registerUserDTO.getUsername()))
                     .thenReturn(Optional.of(Admin.builder().build()));
 
@@ -101,7 +101,7 @@ public class AuthServiceTest {
 
 
         @Test
-        void shouldThrowStoreAlreadyExist() {
+        void mustThrowStoreAlreadyExist() {
             when(userRepository.findByUsername(registerUserDTO.getUsername()))
                     .thenReturn(Optional.empty());
 
@@ -124,7 +124,7 @@ public class AuthServiceTest {
 
 
         @Test
-        void shouldRegister() throws Exception {
+        void mustRegister() throws Exception {
             when(userRepository.findByUsername(registerUserDTO.getUsername()))
                     .thenReturn(Optional.empty());
 
@@ -184,7 +184,7 @@ public class AuthServiceTest {
     @Nested
     class LoginTests {
         @Test
-        void shouldThrowUserNotFound() {
+        void mustThrowUserNotFound() {
             when(userRepository.findByUsername(loginRequestDTO.getUsername()))
                     .thenReturn(Optional.empty());
 
@@ -200,7 +200,7 @@ public class AuthServiceTest {
         }
 
         @Test
-        void shouldThrowBadCredentialsException() throws Exception {
+        void mustThrowBadCredentialsException() throws Exception {
             when(userRepository.findByUsername(loginRequestDTO.getUsername()))
                     .thenReturn(Optional.of(Admin.builder().build()));
 
@@ -224,7 +224,7 @@ public class AuthServiceTest {
         }
 
         @Test
-        void shouldThrowInvalidRoleException() throws Exception {
+        void mustThrowInvalidRoleException() throws Exception {
             Admin admin = Admin.builder()
                     .role(Roles.COMMON)
                     .username("karol.marques")
@@ -260,7 +260,7 @@ public class AuthServiceTest {
 
 
         @Test
-        void shouldLogin() throws Exception {
+        void mustLogin() throws Exception {
             Store store = Store.builder()
                     .id(UUID.randomUUID())
                     .books(Set.of())

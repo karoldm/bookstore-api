@@ -1,6 +1,11 @@
 package com.karoldm.bookstore.services;
 
-import com.karoldm.bookstore.dto.*;
+import com.karoldm.bookstore.dto.requests.LoginRequestDTO;
+import com.karoldm.bookstore.dto.requests.RegisterStoreDTO;
+import com.karoldm.bookstore.dto.requests.RegisterUserDTO;
+import com.karoldm.bookstore.dto.responses.ResponseAuthDTO;
+import com.karoldm.bookstore.dto.responses.ResponseStoreDTO;
+import com.karoldm.bookstore.dto.responses.ResponseUserDTO;
 import com.karoldm.bookstore.entities.Admin;
 import com.karoldm.bookstore.entities.AppUser;
 import com.karoldm.bookstore.entities.Employee;
@@ -14,7 +19,6 @@ import com.karoldm.bookstore.repositories.AppUserRepository;
 import com.karoldm.bookstore.repositories.StoreRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -81,7 +85,7 @@ public class AuthService implements UserDetailsService {
         newAdmin.setId(savedAdmin.getId());
 
         UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(
-                newAdmin.getUsername(), newAdmin.getPassword());
+                registerUserDTO.getUsername(), registerUserDTO.getPassword());
         var auth = authenticationConfiguration.getAuthenticationManager()
                 .authenticate(usernamePassword);
         UserDetails userDetails = (UserDetails) auth.getPrincipal();

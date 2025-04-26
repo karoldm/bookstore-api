@@ -1,12 +1,11 @@
 package com.karoldm.bookstore.controllers;
 
-import com.karoldm.bookstore.dto.LoginRequestDTO;
-import com.karoldm.bookstore.dto.ResponseAuthDTO;
-import com.karoldm.bookstore.dto.RegisterStoreDTO;
+import com.karoldm.bookstore.dto.requests.LoginRequestDTO;
+import com.karoldm.bookstore.dto.responses.ResponseAuthDTO;
+import com.karoldm.bookstore.dto.requests.RegisterStoreDTO;
 import com.karoldm.bookstore.services.AuthService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

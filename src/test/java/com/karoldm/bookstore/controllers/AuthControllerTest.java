@@ -1,21 +1,24 @@
 package com.karoldm.bookstore.controllers;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.karoldm.bookstore.dto.*;
+import com.karoldm.bookstore.dto.requests.LoginRequestDTO;
+import com.karoldm.bookstore.dto.requests.RegisterStoreDTO;
+import com.karoldm.bookstore.dto.requests.RegisterUserDTO;
+import com.karoldm.bookstore.dto.responses.ResponseAuthDTO;
+import com.karoldm.bookstore.dto.responses.ResponseStoreDTO;
+import com.karoldm.bookstore.dto.responses.ResponseUserDTO;
 import com.karoldm.bookstore.exceptions.StoreAlreadyExist;
 import com.karoldm.bookstore.exceptions.UserNotFoundException;
 import com.karoldm.bookstore.exceptions.UsernameAlreadyExist;
-import com.karoldm.bookstore.security.SecurityConfig;
+import com.karoldm.bookstore.repositories.AppUserRepository;
+import com.karoldm.bookstore.security.SecurityFilter;
 import com.karoldm.bookstore.services.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -28,13 +31,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(AuthController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@Import({SecurityConfig.class})
 public class AuthControllerTest {
     @MockitoBean
     private AuthService authService;
     @Autowired
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
+
+    @MockitoBean
+    private SecurityFilter securityFilter;
+    @MockitoBean
+    private AppUserRepository appUserRepository;
 
     private RegisterUserDTO registerUserDTO;
     private RegisterStoreDTO registerStoreDTO;
