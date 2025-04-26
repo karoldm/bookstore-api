@@ -1,4 +1,4 @@
-package com.karoldm.bookstore.dto;
+package com.karoldm.bookstore.dto.responses;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -1,11 +1,8 @@
-package com.karoldm.bookstore.dto;
+package com.karoldm.bookstore.dto.responses;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
-
-import javax.management.relation.Role;
-import java.util.UUID;
 
 @Data
 @Builder
