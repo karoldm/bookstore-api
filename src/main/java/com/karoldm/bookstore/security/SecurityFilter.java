@@ -38,7 +38,7 @@ public class SecurityFilter extends OncePerRequestFilter {
                 String username = tokenService.validateToken(token.get());
                 Optional<AppUser> user = repository.findByUsername(username);
 
-                if(user.isPresent()){
+                if (user.isPresent()) {
                     var authentication = new UsernamePasswordAuthenticationToken(
                             user.get(), null, user.get().getAuthorities()
                     );
@@ -53,8 +53,7 @@ public class SecurityFilter extends OncePerRequestFilter {
             response.getWriter().write(
                     "{\"error\":\"Invalid token\",\"message\":\"" + ex.getMessage() + "\"}"
             );
-        }
-        catch (IOException ioEx){
+        } catch (IOException ioEx) {
             throw new RuntimeException(ioEx.getMessage());
         }
     }

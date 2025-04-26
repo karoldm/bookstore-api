@@ -1,8 +1,8 @@
 package com.karoldm.bookstore.controllers;
 
 import com.karoldm.bookstore.dto.requests.LoginRequestDTO;
-import com.karoldm.bookstore.dto.responses.ResponseAuthDTO;
 import com.karoldm.bookstore.dto.requests.RegisterStoreDTO;
+import com.karoldm.bookstore.dto.responses.ResponseAuthDTO;
 import com.karoldm.bookstore.services.AuthService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

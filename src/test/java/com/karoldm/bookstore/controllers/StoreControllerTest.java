@@ -1,7 +1,6 @@
 package com.karoldm.bookstore.controllers;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.karoldm.bookstore.dto.requests.UpdateStoreDTO;
 import com.karoldm.bookstore.dto.responses.ResponseStoreDTO;
@@ -16,7 +15,6 @@ import com.karoldm.bookstore.security.SecurityFilter;
 import com.karoldm.bookstore.services.StoreSecurityService;
 import com.karoldm.bookstore.services.StoreService;
 import com.karoldm.bookstore.services.TokenService;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -40,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(StoreController.class)
-// use the created security config and filter
+// use the created security config and filter to test the roles and routes access
 // inject the storesecurityservice
 @Import({SecurityConfig.class, SecurityFilter.class, StoreSecurityService.class})
 @AutoConfigureMockMvc(addFilters = true)
@@ -335,7 +333,8 @@ public class StoreControllerTest {
 
             verify(appUserRepository, never()).findByUsername(any());
             verify(storeSecurityService, never()).isStoreAdmin(any(), any());
-            verify(storeService, never()).updateStore(testStoreId, updateStoreDTO);        }
+            verify(storeService, never()).updateStore(testStoreId, updateStoreDTO);
+        }
 
         @Test
         void mustReturnForbiddenForUserCommonRole() throws Exception {
@@ -356,7 +355,8 @@ public class StoreControllerTest {
 
             verify(storeSecurityService, never()).isStoreAdmin(any(), any());
 
-            verify(storeService, never()).updateStore(testStoreId, updateStoreDTO);        }
+            verify(storeService, never()).updateStore(testStoreId, updateStoreDTO);
+        }
 
         @Test
         void mustReturnForbiddenWhenAdminUpdateWrongStore() throws Exception {
@@ -380,7 +380,8 @@ public class StoreControllerTest {
             verify(storeSecurityService, times(1))
                     .isStoreAdmin(wrongAdmin, testStoreId);
 
-            verify(storeService, never()).updateStore(testStoreId, updateStoreDTO);        }
+            verify(storeService, never()).updateStore(testStoreId, updateStoreDTO);
+        }
 
         @Test
         void mustReturnOkWhenAdminUpdateOwnStore() throws Exception {

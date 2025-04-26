@@ -6,7 +6,6 @@ import com.karoldm.bookstore.entities.Employee;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service("storeSecurityService")

@@ -2,7 +2,6 @@ package com.karoldm.bookstore.controllers;
 
 import com.karoldm.bookstore.dto.requests.UpdateStoreDTO;
 import com.karoldm.bookstore.dto.responses.ResponseStoreDTO;
-import com.karoldm.bookstore.services.StoreSecurityService;
 import com.karoldm.bookstore.services.StoreService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

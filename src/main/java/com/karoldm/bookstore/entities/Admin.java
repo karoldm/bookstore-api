@@ -4,7 +4,10 @@ import com.karoldm.bookstore.enums.Roles;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,7 +24,7 @@ import java.util.List;
 public class Admin extends AppUser {
 
     @OneToOne
-    @JoinColumn(name="store_id")
+    @JoinColumn(name = "store_id")
     private Store store;
 
     @Override
