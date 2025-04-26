@@ -7,6 +7,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Collection;
 import java.util.List;
@@ -25,11 +26,6 @@ public class Employee extends AppUser {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return Roles.EMPLOYEE.name();
-            }
-        });
+        return List.of(new SimpleGrantedAuthority("ROLE_" + Roles.EMPLOYEE.name()));
     }
 }
