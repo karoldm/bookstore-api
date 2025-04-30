@@ -23,10 +23,4 @@ public class Store {
     private String slogan;
     @Column
     private String banner; // base64 image
-
-    @OneToMany(mappedBy = "store")
-    private Set<Employee> employees;
-
-    @OneToMany(mappedBy = "store")
-    private Set<Book> books;
 }

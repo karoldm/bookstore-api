@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,8 +41,6 @@ public class StoreServiceTest {
                 .build();
 
         store = Store.builder()
-                .books(Set.of())
-                .employees(Set.of())
                 .name("bookstore")
                 .slogan("The best tech books")
                 .banner(null)

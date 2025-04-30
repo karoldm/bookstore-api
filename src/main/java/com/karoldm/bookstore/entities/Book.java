@@ -21,7 +21,7 @@ public class Book {
     @Column
     private String title;
     @Column
-    private String resume;
+    private String summary;
     @Column
     private LocalDate releasedAt;
     @Column
@@ -30,6 +30,10 @@ public class Book {
     private boolean available;
     @Column
     private int rating;
+    @Column
+    private String cover;
+    @Column
+    private LocalDate createdAt;
 
     @ManyToOne
     @JoinColumn(name = "store_id")

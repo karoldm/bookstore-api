@@ -88,6 +88,15 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
+    @ExceptionHandler(BookNotFoundException.class)
+    private ProblemDetail errorBookNotFound(BookNotFoundException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND,
+                ex.getMessage());
+        problemDetail.setTitle("Book not found error");
+        problemDetail.setType(URI.create("http://localhost:9000/doc/not-found-errors"));
+        return problemDetail;
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     private ProblemDetail errorMehtodArgumentNotValid(MethodArgumentNotValidException ex) {
         String errorMessage = ex.getBindingResult()

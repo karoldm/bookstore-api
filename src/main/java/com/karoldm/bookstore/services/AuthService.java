@@ -61,8 +61,6 @@ public class AuthService implements UserDetailsService {
                 .name(registerDTO.getName())
                 .banner(registerDTO.getBanner())
                 .slogan(registerDTO.getSlogan())
-                .books(Set.of())
-                .employees(Set.of())
                 .build();
 
         Store savedStore = storeRepository.save(newStore);

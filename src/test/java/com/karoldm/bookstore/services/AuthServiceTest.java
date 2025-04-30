@@ -28,7 +28,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -263,8 +262,6 @@ public class AuthServiceTest {
         void mustLogin() throws Exception {
             Store store = Store.builder()
                     .id(UUID.randomUUID())
-                    .books(Set.of())
-                    .employees(Set.of())
                     .name("book store")
                     .slogan("The best tech books")
                     .banner(null)
