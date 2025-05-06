@@ -34,7 +34,16 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/v1/auth/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/appstatus").permitAll()
-                        .requestMatchers("/error", "/swagger-ui/*", "/v3/api-docs", "/v3/api-docs/*").permitAll()
+                        .requestMatchers(
+                                "/error",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs",
+                                "/v3/api-docs/**",
+                                "/webjars/**",
+                                "/swagger-resources",
+                                "/swagger-resources/**"
+                        ).permitAll()
                         .requestMatchers(HttpMethod.PUT, "/v1/store/*").hasRole(Roles.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/v1/store/*").hasRole(Roles.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/v1/store/*").hasAnyRole(Roles.ADMIN.name(), Roles.EMPLOYEE.name())

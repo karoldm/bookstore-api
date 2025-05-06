@@ -12,7 +12,7 @@
 	<artifactId>bookstore</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>bookstore</name>
-	<description>manage your bookstore easly</description>
+	<description>manage your bookstore easily</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -82,6 +82,19 @@
 			<artifactId>jackson-datatype-jsr310</artifactId>
 			<version>2.15.0</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.8.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+			<version>2.8.4</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
