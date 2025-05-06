@@ -15,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Store {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private UUID id;
     @Column
     private String name;

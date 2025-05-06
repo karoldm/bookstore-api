@@ -20,7 +20,7 @@ import java.util.UUID;
 @Builder
 public class AppUser implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private UUID id;
 
     @Column
