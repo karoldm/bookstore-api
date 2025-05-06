@@ -4,7 +4,6 @@ package com.karoldm.bookstore.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Set;
 import java.util.UUID;
 
 @Entity

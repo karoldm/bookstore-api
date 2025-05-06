@@ -163,6 +163,6 @@ public class AuthService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<AppUser> appUser = userRepository.findByUsername(username);
-        return (UserDetails) appUser.orElse(null);
+        return appUser.orElse(null);
     }
 }

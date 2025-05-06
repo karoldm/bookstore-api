@@ -8,7 +8,6 @@ import com.karoldm.bookstore.enums.Roles;
 import com.karoldm.bookstore.exceptions.InvalidNameException;
 import com.karoldm.bookstore.exceptions.InvalidPasswordException;
 import com.karoldm.bookstore.exceptions.InvalidRoleException;
-import com.karoldm.bookstore.exceptions.UserNotFoundException;
 import com.karoldm.bookstore.repositories.AppUserRepository;
 import com.karoldm.bookstore.repositories.StoreRepository;
 import jakarta.transaction.Transactional;
@@ -16,9 +15,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 @AllArgsConstructor

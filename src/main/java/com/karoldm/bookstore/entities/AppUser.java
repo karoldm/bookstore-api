@@ -3,7 +3,6 @@ package com.karoldm.bookstore.entities;
 import com.karoldm.bookstore.enums.Roles;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -13,7 +13,7 @@ public class TokenServiceTest {
     final private String username = "karol.marques";
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         tokenService = new TokenService(
                 "secret-key",
                 2,
@@ -39,7 +39,7 @@ public class TokenServiceTest {
     }
 
     @Test
-    void shouldThrowJWTVerificationExceptionWhenGenerateToken() throws NoSuchFieldException, IllegalAccessException {
+    void shouldThrowJWTVerificationExceptionWhenGenerateToken() {
         tokenService = new TokenService(
                 "secret-key",
                 0,
@@ -48,13 +48,13 @@ public class TokenServiceTest {
 
         String token = tokenService.generateToken(username);
 
-        Exception exception = assertThrows(JWTVerificationException.class, () -> {
+        assertThrows(JWTVerificationException.class, () -> {
             tokenService.validateToken(token);
         });
     }
 
     @Test
-    void shouldthrowJWTVerificationExceptionWhenGenerateRefreshToken() throws NoSuchFieldException, IllegalAccessException {
+    void shouldthrowJWTVerificationExceptionWhenGenerateRefreshToken() {
         tokenService = new TokenService(
                 "secret-key",
                 2,
@@ -63,7 +63,7 @@ public class TokenServiceTest {
 
         String token = tokenService.generateRefreshToken(username);
 
-        Exception exception = assertThrows(JWTVerificationException.class, () -> {
+        assertThrows(JWTVerificationException.class, () -> {
             tokenService.validateToken(token);
         });
     }

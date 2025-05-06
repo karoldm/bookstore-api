@@ -3,7 +3,6 @@ package com.karoldm.bookstore.handlers;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.karoldm.bookstore.exceptions.*;
-import org.springframework.beans.factory.parsing.Problem;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -18,7 +17,7 @@ import java.net.URI;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidNameException.class)
-    private ProblemDetail errorInvalidName(InvalidNameException ex){
+    private ProblemDetail errorInvalidName(InvalidNameException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
                 ex.getMessage());
         problemDetail.setTitle("Invalid name");
@@ -27,7 +26,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidPasswordException.class)
-    private ProblemDetail errorInvalidPassword(InvalidPasswordException ex){
+    private ProblemDetail errorInvalidPassword(InvalidPasswordException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
                 ex.getMessage());
         problemDetail.setTitle("Invalid password");

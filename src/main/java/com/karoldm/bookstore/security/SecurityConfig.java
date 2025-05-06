@@ -25,6 +25,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final SecurityFilter securityFilter;
 
+    final private String storePath = "/v1/store/*";
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
@@ -44,18 +46,18 @@ public class SecurityConfig {
                                 "/swagger-resources",
                                 "/swagger-resources/**"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/v1/store/*").hasRole(Roles.ADMIN.name())
-                        .requestMatchers(HttpMethod.DELETE, "/v1/store/*").hasRole(Roles.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/v1/store/*").hasAnyRole(Roles.ADMIN.name(), Roles.EMPLOYEE.name())
-                        .requestMatchers(HttpMethod.PUT, "/v1/store/*/book/*/available").hasAnyRole(Roles.EMPLOYEE.name(), Roles.ADMIN.name())
-                        .requestMatchers(HttpMethod.PUT, "/v1/store/*/book/*").hasRole(Roles.ADMIN.name())
-                        .requestMatchers(HttpMethod.POST, "/v1/store/*/book").hasRole(Roles.ADMIN.name())
-                        .requestMatchers(HttpMethod.DELETE, "/v1/store/*/book/*").hasRole(Roles.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/v1/store/*/book").hasAnyRole(Roles.ADMIN.name(), Roles.EMPLOYEE.name())
-                        .requestMatchers(HttpMethod.GET, "/v1/store/*/employee").hasRole(Roles.ADMIN.name())
-                        .requestMatchers(HttpMethod.POST, "/v1/store/*/employee").hasRole(Roles.ADMIN.name())
-                        .requestMatchers(HttpMethod.PUT, "/v1/store/*/employee/*").hasRole(Roles.ADMIN.name())
-                        .requestMatchers(HttpMethod.DELETE, "/v1/store/*/employee/*").hasRole(Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, storePath).hasRole(Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, storePath).hasRole(Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, storePath).hasAnyRole(Roles.ADMIN.name(), Roles.EMPLOYEE.name())
+                        .requestMatchers(HttpMethod.PUT, storePath+"/book/*/available").hasAnyRole(Roles.EMPLOYEE.name(), Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, storePath+"/book/*").hasRole(Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, storePath+"/book").hasRole(Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, storePath+"/book/*").hasRole(Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, storePath+"/book").hasAnyRole(Roles.ADMIN.name(), Roles.EMPLOYEE.name())
+                        .requestMatchers(HttpMethod.GET, storePath+"/employee").hasRole(Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, storePath+"/employee").hasRole(Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, storePath+"/employee/*").hasRole(Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, storePath+"/employee/*").hasRole(Roles.ADMIN.name())
                         .requestMatchers(HttpMethod.PUT, "/v1/admin").hasRole(Roles.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/v1/admin").hasRole(Roles.ADMIN.name())
                         .anyRequest().authenticated()// Authenticated for all other endpoints

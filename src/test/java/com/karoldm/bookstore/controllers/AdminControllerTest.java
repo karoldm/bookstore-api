@@ -114,14 +114,6 @@ public class AdminControllerTest {
                 .password("employee")
                 .store(store)
                 .build();
-
-
-        Store anotherStore = Store.builder()
-                .id(UUID.randomUUID())
-                .name("another store")
-                .slogan("The best tech books")
-                .banner(null)
-                .build();
     }
 
     @Nested

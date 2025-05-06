@@ -1,6 +1,5 @@
 package com.karoldm.bookstore.controllers;
 
-import com.karoldm.bookstore.dto.requests.RegisterUserDTO;
 import com.karoldm.bookstore.dto.requests.UpdateUserDTO;
 import com.karoldm.bookstore.dto.responses.ResponseUserDTO;
 import com.karoldm.bookstore.entities.AppUser;
@@ -15,12 +14,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Set;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/v1/admin")
