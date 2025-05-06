@@ -6,9 +6,7 @@ import com.karoldm.bookstore.dto.requests.RegisterUserDTO;
 import com.karoldm.bookstore.dto.responses.ResponseAuthDTO;
 import com.karoldm.bookstore.dto.responses.ResponseStoreDTO;
 import com.karoldm.bookstore.dto.responses.ResponseUserDTO;
-import com.karoldm.bookstore.entities.Admin;
 import com.karoldm.bookstore.entities.AppUser;
-import com.karoldm.bookstore.entities.Employee;
 import com.karoldm.bookstore.entities.Store;
 import com.karoldm.bookstore.enums.Roles;
 import com.karoldm.bookstore.exceptions.InvalidRoleException;
@@ -30,7 +28,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -69,32 +66,33 @@ public class AuthService implements UserDetailsService {
 
         RegisterUserDTO registerUserDTO = registerDTO.getAdmin();
 
-        Admin newAdmin = Admin.builder()
+        AppUser newAdmin = AppUser.builder()
                 .username(registerUserDTO.getUsername())
                 .password(encryptedPassword)
                 .name(registerUserDTO.getName())
-                .photo(registerUserDTO.getPhoto())
                 .role(Roles.ADMIN)
                 .store(newStore)
                 .build();
 
-        Admin savedAdmin = userRepository.save(newAdmin);
+        AppUser savedAdmin = userRepository.save(newAdmin);
 
         newAdmin.setId(savedAdmin.getId());
 
         UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(
                 registerUserDTO.getUsername(), registerUserDTO.getPassword());
+
         var auth = authenticationConfiguration.getAuthenticationManager()
                 .authenticate(usernamePassword);
+
         UserDetails userDetails = (UserDetails) auth.getPrincipal();
 
         String token = tokenService.generateToken(userDetails.getUsername());
         String refreshToken = tokenService.generateRefreshToken(userDetails.getUsername());
 
         ResponseUserDTO responseUserDTO = ResponseUserDTO.builder()
+                .id(newAdmin.getId())
                 .username(newAdmin.getUsername())
                 .role(newAdmin.getRole().name())
-                .photo(newAdmin.getPhoto())
                 .name(newAdmin.getName())
                 .build();
 
@@ -135,17 +133,14 @@ public class AuthService implements UserDetailsService {
 
         ResponseUserDTO responseUserDTO = ResponseUserDTO.builder()
                 .username(appUser.getUsername())
-                .photo(appUser.getPhoto())
                 .name(appUser.getName())
                 .role(appUser.getRole().name())
                 .build();
 
         Store store;
 
-        if (appUser.getRole() == Roles.ADMIN) {
-            store = ((Admin) appUser).getStore();
-        } else if (appUser.getRole() == Roles.EMPLOYEE) {
-            store = ((Employee) appUser).getStore();
+        if (appUser.getRole() == Roles.ADMIN || appUser.getRole() == Roles.EMPLOYEE) {
+            store = appUser.getStore();
         } else {
             throw new InvalidRoleException(appUser.getRole());
         }

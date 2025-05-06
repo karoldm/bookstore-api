@@ -4,9 +4,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.karoldm.bookstore.dto.requests.UpdateStoreDTO;
 import com.karoldm.bookstore.dto.responses.ResponseStoreDTO;
-import com.karoldm.bookstore.entities.Admin;
 import com.karoldm.bookstore.entities.AppUser;
-import com.karoldm.bookstore.entities.Employee;
 import com.karoldm.bookstore.entities.Store;
 import com.karoldm.bookstore.enums.Roles;
 import com.karoldm.bookstore.repositories.AppUserRepository;
@@ -59,13 +57,11 @@ public class StoreControllerTest {
 
     private final UUID testStoreId = UUID.randomUUID();
     private ResponseStoreDTO responseStoreDTO;
-    private Store store;
-    private Admin admin;
-    private Employee employee;
-    private String validToken = "valid-token";
-    private Store anotherStore;
-    private Admin wrongAdmin;
-    private Employee wrongEmployee;
+    private AppUser admin;
+    private AppUser employee;
+    final private String validToken = "valid-token";
+    private AppUser wrongAdmin;
+    private AppUser wrongEmployee;
     private AppUser commonUser;
     private UpdateStoreDTO updateStoreDTO;
 
@@ -86,29 +82,26 @@ public class StoreControllerTest {
                 .name("common user")
                 .password("common_user")
                 .username("common_user")
-                .photo(null)
                 .role(Roles.COMMON)
                 .build();
 
-        store = Store.builder()
+        Store store = Store.builder()
                 .id(testStoreId)
                 .name("my store")
                 .slogan("The best tech books")
                 .banner(null)
                 .build();
 
-        admin = Admin.builder()
+        admin = AppUser.builder()
                 .name("admin")
-                .photo(null)
                 .role(Roles.ADMIN)
                 .username("admin")
                 .password("admin")
                 .store(store)
                 .build();
 
-        employee = Employee.builder()
+        employee = AppUser.builder()
                 .name("employee")
-                .photo(null)
                 .role(Roles.EMPLOYEE)
                 .username("employee")
                 .password("employee")
@@ -116,25 +109,23 @@ public class StoreControllerTest {
                 .build();
 
 
-        anotherStore = Store.builder()
+        Store anotherStore = Store.builder()
                 .id(UUID.randomUUID())
                 .name("another store")
                 .slogan("The best tech books")
                 .banner(null)
                 .build();
 
-        wrongAdmin = Admin.builder()
+        wrongAdmin = AppUser.builder()
                 .name("wrong admin")
-                .photo(null)
                 .role(Roles.ADMIN)
                 .username("wrong_admin")
                 .password("wrong_admin")
                 .store(anotherStore)
                 .build();
 
-        wrongEmployee = Employee.builder()
+        wrongEmployee = AppUser.builder()
                 .name("wrong employee")
-                .photo(null)
                 .role(Roles.EMPLOYEE)
                 .username("wrong_employee")
                 .password("wrong_employee")

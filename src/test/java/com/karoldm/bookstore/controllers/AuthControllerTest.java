@@ -43,7 +43,6 @@ public class AuthControllerTest {
     @MockitoBean
     private AppUserRepository appUserRepository;
 
-    private RegisterUserDTO registerUserDTO;
     private RegisterStoreDTO registerStoreDTO;
     private LoginRequestDTO loginRequestDTO;
 
@@ -51,10 +50,9 @@ public class AuthControllerTest {
     void setup() {
         objectMapper = new ObjectMapper();
 
-        registerUserDTO = RegisterUserDTO.builder()
+        RegisterUserDTO registerUserDTO = RegisterUserDTO.builder()
                 .name("karol marques")
                 .username("karol.marques")
-                .photo(null)
                 .password("123456")
                 .build();
 

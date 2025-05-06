@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class TokenServiceTest {
     private TokenService tokenService;
 
-    private String username = "karol.marques";
+    final private String username = "karol.marques";
 
     @BeforeEach
     void setUp() throws Exception {

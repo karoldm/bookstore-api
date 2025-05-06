@@ -1,8 +1,7 @@
 package com.karoldm.bookstore.services;
 
-import com.karoldm.bookstore.entities.Admin;
 import com.karoldm.bookstore.entities.AppUser;
-import com.karoldm.bookstore.entities.Employee;
+import com.karoldm.bookstore.enums.Roles;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +13,8 @@ public class StoreSecurityService {
     public boolean canAccessStore(Object user, UUID storeId) {
         if (user instanceof AppUser appUser) {
 
-            return appUser instanceof Admin admin && storeId.equals(admin.getStore().getId()) ||
-                    appUser instanceof Employee emp && storeId.equals(emp.getStore().getId());
+            return appUser.getRole() == Roles.ADMIN && storeId.equals(appUser.getStore().getId()) ||
+                    appUser.getRole() == Roles.EMPLOYEE && storeId.equals(appUser.getStore().getId());
         }
 
         return false;
@@ -24,8 +23,8 @@ public class StoreSecurityService {
     public boolean isStoreAdmin(Object user, UUID storeId) {
         if (user instanceof AppUser appUser) {
 
-            return appUser instanceof Admin admin &&
-                    storeId.equals(admin.getStore().getId());
+            return appUser.getRole() == Roles.ADMIN &&
+                    storeId.equals(appUser.getStore().getId());
         }
 
         return false;

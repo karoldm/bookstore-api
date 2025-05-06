@@ -1,4 +1,4 @@
-package com.karoldm.bookstore.repositories.mocks;
+package com.karoldm.bookstore.mocks;
 
 import com.karoldm.bookstore.entities.Book;
 import com.karoldm.bookstore.entities.Store;

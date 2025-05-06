@@ -43,6 +43,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/v1/store/*/book").hasRole(Roles.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/v1/store/*/book/*").hasRole(Roles.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/v1/store/*/book").hasAnyRole(Roles.ADMIN.name(), Roles.EMPLOYEE.name())
+                        .requestMatchers(HttpMethod.GET, "/v1/store/*/employee").hasRole(Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, "/v1/store/*/employee").hasRole(Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, "/v1/store/*/employee/*").hasRole(Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, "/v1/store/*/employee/*").hasRole(Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, "/v1/admin").hasRole(Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, "/v1/admin").hasRole(Roles.ADMIN.name())
                         .anyRequest().authenticated()// Authenticated for all other endpoints
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);

@@ -1,8 +1,6 @@
 package com.karoldm.bookstore.services;
 
-import com.karoldm.bookstore.entities.Admin;
 import com.karoldm.bookstore.entities.AppUser;
-import com.karoldm.bookstore.entities.Employee;
 import com.karoldm.bookstore.entities.Store;
 import com.karoldm.bookstore.enums.Roles;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,38 +20,33 @@ public class StoreSecurityServiceTest {
     @InjectMocks
     private StoreSecurityService storeSecurityService;
 
-    private Store store;
-    private Admin admin;
-    private Employee employee;
+    private AppUser admin;
+    private AppUser employee;
 
-    private Store anotherStore;
-    private Admin wrongAdmin;
-    private Employee wrongEmployee;
+    private AppUser wrongAdmin;
+    private AppUser wrongEmployee;
 
-    private UUID testStoreId = UUID.randomUUID();
+    private final UUID testStoreId = UUID.randomUUID();
 
     @BeforeEach
     void setup() {
 
-        store = Store.builder()
+        Store store = Store.builder()
                 .id(testStoreId)
                 .name("my store")
-                .slogan("The best tech books")
                 .banner(null)
                 .build();
 
-        admin = Admin.builder()
+        admin = AppUser.builder()
                 .name("admin")
-                .photo(null)
                 .role(Roles.ADMIN)
                 .username("admin")
                 .password("admin")
                 .store(store)
                 .build();
 
-        employee = Employee.builder()
+        employee = AppUser.builder()
                 .name("employee")
-                .photo(null)
                 .role(Roles.EMPLOYEE)
                 .username("employee")
                 .password("employee")
@@ -61,25 +54,23 @@ public class StoreSecurityServiceTest {
                 .build();
 
 
-        anotherStore = Store.builder()
+        Store anotherStore = Store.builder()
                 .id(UUID.randomUUID())
                 .name("another store")
                 .slogan("The best tech books")
                 .banner(null)
                 .build();
 
-        wrongAdmin = Admin.builder()
+        wrongAdmin = AppUser.builder()
                 .name("wrong admin")
-                .photo(null)
                 .role(Roles.ADMIN)
                 .username("wrong_admin")
                 .password("wrong_admin")
                 .store(anotherStore)
                 .build();
 
-        wrongEmployee = Employee.builder()
+        wrongEmployee = AppUser.builder()
                 .name("wrong employee")
-                .photo(null)
                 .role(Roles.EMPLOYEE)
                 .username("wrong_employee")
                 .password("wrong_employee")

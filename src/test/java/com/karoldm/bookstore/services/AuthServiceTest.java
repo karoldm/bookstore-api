@@ -4,7 +4,7 @@ import com.karoldm.bookstore.dto.requests.LoginRequestDTO;
 import com.karoldm.bookstore.dto.requests.RegisterStoreDTO;
 import com.karoldm.bookstore.dto.requests.RegisterUserDTO;
 import com.karoldm.bookstore.dto.responses.ResponseAuthDTO;
-import com.karoldm.bookstore.entities.Admin;
+import com.karoldm.bookstore.entities.AppUser;
 import com.karoldm.bookstore.entities.Store;
 import com.karoldm.bookstore.enums.Roles;
 import com.karoldm.bookstore.exceptions.InvalidRoleException;
@@ -63,7 +63,6 @@ public class AuthServiceTest {
         registerUserDTO = RegisterUserDTO.builder()
                 .name("karol marques")
                 .username("karol.marques")
-                .photo(null)
                 .password("123456")
                 .build();
 
@@ -85,7 +84,7 @@ public class AuthServiceTest {
         @Test
         void mustThrowUserAlreadyExist() {
             when(userRepository.findByUsername(registerUserDTO.getUsername()))
-                    .thenReturn(Optional.of(Admin.builder().build()));
+                    .thenReturn(Optional.of(AppUser.builder().build()));
 
             Exception exception = assertThrows(UsernameAlreadyExist.class, () -> {
                 authService.register(registerStoreDTO);
@@ -130,8 +129,8 @@ public class AuthServiceTest {
             when(storeRepository.findByName(registerStoreDTO.getName())).thenReturn(
                     Optional.empty());
 
-            when(userRepository.save(any(Admin.class)))
-                    .thenReturn(Admin.builder().id(UUID.randomUUID()).build());
+            when(userRepository.save(any(AppUser.class)))
+                    .thenReturn(AppUser.builder().id(UUID.randomUUID()).role(Roles.ADMIN).build());
 
             when(storeRepository.save(any(Store.class)))
                     .thenReturn(Store.builder().id(UUID.randomUUID()).build());
@@ -167,7 +166,7 @@ public class AuthServiceTest {
                     .findByName(registerStoreDTO.getName());
 
             verify(userRepository, times(1))
-                    .save(any(Admin.class));
+                    .save(any(AppUser.class));
 
             verify(storeRepository, times(1))
                     .save(any(Store.class));
@@ -201,7 +200,7 @@ public class AuthServiceTest {
         @Test
         void mustThrowBadCredentialsException() throws Exception {
             when(userRepository.findByUsername(loginRequestDTO.getUsername()))
-                    .thenReturn(Optional.of(Admin.builder().build()));
+                    .thenReturn(Optional.of(AppUser.builder().build()));
 
             when(authenticationConfiguration.getAuthenticationManager())
                     .thenReturn(authenticationManager);
@@ -224,16 +223,15 @@ public class AuthServiceTest {
 
         @Test
         void mustThrowInvalidRoleException() throws Exception {
-            Admin admin = Admin.builder()
+            AppUser user = AppUser.builder()
                     .role(Roles.COMMON)
                     .username("karol.marques")
                     .name("karol marques")
                     .id(UUID.randomUUID())
-                    .photo(null)
                     .build();
 
             when(userRepository.findByUsername(loginRequestDTO.getUsername()))
-                    .thenReturn(Optional.of(admin));
+                    .thenReturn(Optional.of(user));
 
             when(authenticationConfiguration.getAuthenticationManager())
                     .thenReturn(authenticationManager);
@@ -247,7 +245,7 @@ public class AuthServiceTest {
                 authService.login(loginRequestDTO);
             });
 
-            assertEquals("Usuário com role " + admin.getRole().name() + " não tem acesso a esse recurso.",
+            assertEquals("Usuário com role " + user.getRole().name() + " não tem acesso a esse recurso.",
                     exception.getMessage());
 
             verify(userRepository, times(1))
@@ -267,17 +265,16 @@ public class AuthServiceTest {
                     .banner(null)
                     .build();
 
-            Admin admin = Admin.builder()
+            AppUser user = AppUser.builder()
                     .role(Roles.ADMIN)
                     .username("karol.marques")
                     .name("karol marques")
                     .id(UUID.randomUUID())
                     .store(store)
-                    .photo(null)
                     .build();
 
             when(userRepository.findByUsername(loginRequestDTO.getUsername()))
-                    .thenReturn(Optional.of(admin));
+                    .thenReturn(Optional.of(user));
 
             when(userDetails.getUsername()).thenReturn(loginRequestDTO.getUsername());
 

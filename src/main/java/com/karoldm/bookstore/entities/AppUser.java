@@ -2,10 +2,7 @@ package com.karoldm.bookstore.entities;
 
 import com.karoldm.bookstore.enums.Roles;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,7 +17,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
+@Builder
 public class AppUser implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -28,17 +25,19 @@ public class AppUser implements UserDetails {
 
     @Column
     private String name;
-    @Column
+    @Column(unique = true)
     private String username;
     @Column
     private String password;
-    @Column
-    private String photo; // base64 image
-    @Column
+    @Column(nullable = false)
     private Roles role;
+
+    @OneToOne
+    @JoinColumn(name = "store_id")
+    private Store store;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + Roles.COMMON.name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + this.role.name()));
     }
 }
