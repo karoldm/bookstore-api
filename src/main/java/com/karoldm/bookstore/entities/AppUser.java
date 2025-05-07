@@ -34,7 +34,7 @@ public class AppUser implements UserDetails {
     @Column(nullable = false)
     private Roles role;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "store_id")
     private Store store;
 
