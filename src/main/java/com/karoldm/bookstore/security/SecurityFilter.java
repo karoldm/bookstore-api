@@ -54,7 +54,7 @@ public class SecurityFilter extends OncePerRequestFilter {
                     "{\"error\":\"Invalid token\",\"message\":\"" + ex.getMessage() + "\"}"
             );
         } catch (IOException ioEx) {
-            throw new RuntimeException(ioEx.getMessage());
+            throw new IOException(ioEx.getMessage());
         }
     }
 

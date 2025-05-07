@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @AllArgsConstructor
 public class BooksFilters implements Specification<Book> {
-    private BooksFilterDTO booksFilterDTO;
+    private transient BooksFilterDTO booksFilterDTO;
     private UUID storeId;
 
     @Override

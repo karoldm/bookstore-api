@@ -41,7 +41,7 @@ public class TokenService {
             return JWT.create().withSubject(username)
                     .withExpiresAt(generateExpirationDate(expirationHour)).sign(algorithm);
         } catch (JWTCreationException exception) {
-            throw new RuntimeException("Error while generating token: " + exception);
+            throw new JWTCreationException("Error while generating token", exception);
         }
     }
 

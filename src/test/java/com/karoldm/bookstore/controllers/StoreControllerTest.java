@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 // inject the storesecurityservice
 @Import({SecurityConfig.class, SecurityFilter.class, StoreSecurityService.class})
 @AutoConfigureMockMvc(addFilters = true)
-public class StoreControllerTest {
+class StoreControllerTest {
 
     @MockitoBean
     private StoreService storeService;

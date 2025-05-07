@@ -26,9 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -41,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(AdminController.class)
 @Import({SecurityConfig.class, SecurityFilter.class, StoreSecurityService.class})
 @AutoConfigureMockMvc(addFilters = true)
-public class AdminControllerTest {
+class AdminControllerTest {
     @MockitoBean
     private AdminService adminService;
     @MockitoBean

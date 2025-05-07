@@ -45,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(BookController.class)
 @Import({SecurityConfig.class, SecurityFilter.class, StoreSecurityService.class})
 @AutoConfigureMockMvc(addFilters = true)
-public class BookControllerTest {
+class BookControllerTest {
     @MockitoBean
     private BookService bookService;
     @MockitoBean

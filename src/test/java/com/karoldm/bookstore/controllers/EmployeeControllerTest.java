@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(EmployeeController.class)
 @Import({SecurityConfig.class, SecurityFilter.class, StoreSecurityService.class})
 @AutoConfigureMockMvc(addFilters = true)
-public class EmployeeControllerTest {
+class EmployeeControllerTest {
     @MockitoBean
     private EmployeeService employeeService;
     @MockitoBean
