@@ -107,7 +107,7 @@ public class EmployeeServiceTest {
         }
 
         @Test
-        void mustCreateEmployee() throws Exception {
+        void mustCreateEmployee() {
             when(storeRepository.findById(testStoreId)).thenReturn(Optional.of(store));
 
             when(userRepository.findByUsername(registerUserDTO.getUsername()))
@@ -146,7 +146,7 @@ public class EmployeeServiceTest {
         }
 
         @Test
-        void mustListEmployees() throws Exception {
+        void mustListEmployees()  {
             when(storeRepository.findById(testStoreId)).thenReturn(Optional.of(store));
 
             HashSet<AppUser> employees = new HashSet<>();
@@ -187,7 +187,7 @@ public class EmployeeServiceTest {
         }
 
         @Test
-        void mustThrowNotFoundWhenUserDoesntExist() throws Exception {
+        void mustThrowNotFoundWhenUserDoesntExist() {
             when(storeRepository.findById(testStoreId)).thenReturn(Optional.of(store));
 
             when(userRepository.findByIdAndStoreAndRole(testEmployeeId, store, Roles.EMPLOYEE))
@@ -275,7 +275,7 @@ public class EmployeeServiceTest {
         }
 
         @Test
-        void mustThrowNotFoundWhenUserDoesntExist() throws Exception {
+        void mustThrowNotFoundWhenUserDoesntExist(){
             when(storeRepository.findById(testStoreId)).thenReturn(Optional.of(store));
 
             when(userRepository.findByIdAndStoreAndRole(testEmployeeId, store, Roles.EMPLOYEE))
