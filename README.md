@@ -84,15 +84,12 @@ API de Gerenciamento de livrarias! Esta API foi desenvolvida utilizando Spring B
 
 ### Casos de uso
 
-<div style="background-color: white; display: inline-block;">
-![image](https://github.com/user-attachments/assets/c56e4c73-6d4c-46ee-a112-201d4afc40c6)
-</div>
+![image](https://github.com/user-attachments/assets/21baf1ca-6247-4983-aa3e-45e26208ac4a)
 
 ### Modelagem
 
-<div style="background-color: white; display: inline-block;">
-![image](https://github.com/user-attachments/assets/5a5708fb-ec6b-48af-bc37-dd6e26916889)
-</div>
+![image](https://github.com/user-attachments/assets/73528a27-029f-4ecd-a1d2-9f6307ce024f)
+
 
 ## Deploy
 API hospedada no [Render](https://render.com/)
