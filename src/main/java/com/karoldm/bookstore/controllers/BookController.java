@@ -20,7 +20,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/v1/store/{storeId}/book")
@@ -41,7 +40,7 @@ public class BookController {
     })
     @PreAuthorize("@storeSecurityService.isStoreAdmin(principal, #storeId)")
     ResponseEntity<ResponseBookDTO> createBook(
-            @PathVariable UUID storeId,
+            @PathVariable Long storeId,
             @RequestBody @Valid RequestBookDTO requestBookDTO,
             @AuthenticationPrincipal Object principal
     ) {
@@ -61,8 +60,8 @@ public class BookController {
     })
     @PreAuthorize("@storeSecurityService.isStoreAdmin(principal, #storeId)")
     ResponseEntity<ResponseBookDTO> deleteBook(
-            @PathVariable UUID storeId,
-            @PathVariable UUID bookId,
+            @PathVariable Long storeId,
+            @PathVariable Long bookId,
             @AuthenticationPrincipal Object principal
     ) {
         bookService.deleteBook(bookId);
@@ -82,8 +81,8 @@ public class BookController {
     })
     @PreAuthorize("@storeSecurityService.isStoreAdmin(principal, #storeId)")
     ResponseEntity<ResponseBookDTO> updateBook(
-            @PathVariable UUID storeId,
-            @PathVariable UUID bookId,
+            @PathVariable Long storeId,
+            @PathVariable Long bookId,
             @RequestBody @Valid RequestBookDTO requestBookDTO,
             @AuthenticationPrincipal Object principal
     ) {
@@ -103,7 +102,7 @@ public class BookController {
     })
     @PreAuthorize("@storeSecurityService.canAccessStore(principal, #storeId)")
     ResponseEntity<Set<ResponseBookDTO>> listAllBooks(
-            @PathVariable UUID storeId,
+            @PathVariable Long storeId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             BooksFilterDTO booksFilterDTO,
@@ -127,8 +126,8 @@ public class BookController {
     })
     @PreAuthorize("@storeSecurityService.canAccessStore(principal, #storeId)")
     ResponseEntity<ResponseBookDTO> changeAvailable(
-            @PathVariable UUID storeId,
-            @PathVariable UUID bookId,
+            @PathVariable Long storeId,
+            @PathVariable Long bookId,
             @RequestBody @Valid UpdateBookAvailableDTO updateBookAvailableDTO,
             @AuthenticationPrincipal Object principal
     ) {

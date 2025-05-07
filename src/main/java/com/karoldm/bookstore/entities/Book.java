@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Entity
 @Builder
@@ -16,7 +15,7 @@ public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private UUID id;
+    private Long id;
 
     @Column
     private String title;
@@ -30,7 +29,7 @@ public class Book {
     private boolean available;
     @Column
     private int rating;
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String cover;
     @Column
     private LocalDate createdAt;

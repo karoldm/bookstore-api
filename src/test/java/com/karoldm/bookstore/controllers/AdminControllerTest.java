@@ -27,7 +27,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -51,7 +50,7 @@ class AdminControllerTest {
     @Autowired
     private SecurityFilter securityFilter;
 
-    private final UUID testStoreId = UUID.randomUUID();
+    private final Long testStoreId = 1L;
     private AppUser admin;
     private AppUser employee;
     final private String validToken = "valid-token";
@@ -59,7 +58,6 @@ class AdminControllerTest {
 
     private ResponseUserDTO responseUserDTO;
     private UpdateUserDTO updateUserDTO;
-    final private UUID testEmployeeId = UUID.randomUUID();
 
     private ObjectMapper objectMapper;
 
@@ -75,6 +73,7 @@ class AdminControllerTest {
                 .password("updated-password")
                 .build();
 
+        Long testEmployeeId = 2L;
         responseUserDTO = ResponseUserDTO.builder()
                 .id(testEmployeeId)
                 .name("employee name")
@@ -83,7 +82,7 @@ class AdminControllerTest {
                 .build();
 
         commonUser = AppUser.builder()
-                .id(UUID.randomUUID())
+                .id(3L)
                 .name("common user")
                 .password("common_user")
                 .username("common_user")

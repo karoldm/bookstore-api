@@ -5,12 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Data
 @Builder
 public class ResponseBookDTO {
-    private UUID id;
+    private Long id;
     private String title;
     private String summary;
     @JsonFormat(pattern = "dd/MM/yyyy")

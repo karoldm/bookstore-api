@@ -26,7 +26,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -55,7 +54,7 @@ class StoreControllerTest {
     @Autowired
     private SecurityFilter securityFilter;
 
-    private final UUID testStoreId = UUID.randomUUID();
+    private final Long testStoreId = 1L;
     private ResponseStoreDTO responseStoreDTO;
     private AppUser admin;
     private AppUser employee;
@@ -78,7 +77,7 @@ class StoreControllerTest {
                 .build();
 
         commonUser = AppUser.builder()
-                .id(UUID.randomUUID())
+                .id(2L)
                 .name("common user")
                 .password("common_user")
                 .username("common_user")
@@ -110,7 +109,7 @@ class StoreControllerTest {
 
 
         Store anotherStore = Store.builder()
-                .id(UUID.randomUUID())
+                .id(3L)
                 .name("another store")
                 .slogan("The best tech books")
                 .banner(null)

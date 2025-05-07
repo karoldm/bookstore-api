@@ -4,8 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.UUID;
-
 @Data
 @Builder
 public class ResponseStoreDTO {
@@ -15,5 +13,5 @@ public class ResponseStoreDTO {
     private String slogan;
     private String banner;
     @NotBlank
-    private UUID id;
+    private Long id;
 }

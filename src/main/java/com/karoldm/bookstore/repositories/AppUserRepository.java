@@ -7,12 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
-public interface AppUserRepository extends JpaRepository<AppUser, UUID> {
+public interface AppUserRepository extends JpaRepository<AppUser, Long> {
     Optional<AppUser> findByUsername(String username);
 
     Set<AppUser> findByStoreAndRole(Store store, Roles role);
 
-    Optional<AppUser> findByIdAndStoreAndRole(UUID id, Store store, Roles role);
+    Optional<AppUser> findByIdAndStoreAndRole(Long id, Store store, Roles role);
 }

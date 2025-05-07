@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,7 +23,7 @@ public class EmployeeService {
     private AppUserRepository userRepository;
     private StoreRepository storeRepository;
 
-    public Set<ResponseUserDTO> listEmployees(UUID storeId) {
+    public Set<ResponseUserDTO> listEmployees(Long storeId) {
         Optional<Store> optionalStore = storeRepository.findById(storeId);
         if (optionalStore.isEmpty()) {
             throw new StoreNotFoundException(storeId);
@@ -44,7 +43,7 @@ public class EmployeeService {
                 .collect(Collectors.toSet());
     }
 
-    public ResponseUserDTO createEmployee(UUID storeId, RegisterUserDTO registerUserDTO) {
+    public ResponseUserDTO createEmployee(Long storeId, RegisterUserDTO registerUserDTO) {
         Optional<Store> optionalStore = storeRepository.findById(storeId);
 
         if (optionalStore.isEmpty()) {
@@ -81,7 +80,7 @@ public class EmployeeService {
                 .build();
     }
 
-    public ResponseUserDTO updateEmployee(UUID storeId, UUID employeeId, UpdateUserDTO updateUserDTO) {
+    public ResponseUserDTO updateEmployee(Long storeId, Long employeeId, UpdateUserDTO updateUserDTO) {
         Optional<Store> optionalStore = storeRepository.findById(storeId);
 
         if (optionalStore.isEmpty()) {
@@ -123,7 +122,7 @@ public class EmployeeService {
                 .build();
     }
 
-    public void deleteEmployee(UUID storeId, UUID employeeId){
+    public void deleteEmployee(Long storeId, Long employeeId){
         Optional<Store> optionalStore = storeRepository.findById(storeId);
 
         if (optionalStore.isEmpty()) {

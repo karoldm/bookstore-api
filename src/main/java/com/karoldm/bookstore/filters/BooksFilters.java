@@ -12,12 +12,11 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @AllArgsConstructor
 public class BooksFilters implements Specification<Book> {
     private transient BooksFilterDTO booksFilterDTO;
-    private UUID storeId;
+    private Long storeId;
 
     @Override
     public Predicate toPredicate(

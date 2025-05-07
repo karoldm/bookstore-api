@@ -10,8 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -26,7 +24,7 @@ public class StoreSecurityServiceTest {
     private AppUser wrongAdmin;
     private AppUser wrongEmployee;
 
-    private final UUID testStoreId = UUID.randomUUID();
+    private final Long testStoreId = 1L;
 
     @BeforeEach
     void setup() {
@@ -55,7 +53,7 @@ public class StoreSecurityServiceTest {
 
 
         Store anotherStore = Store.builder()
-                .id(UUID.randomUUID())
+                .id(2L)
                 .name("another store")
                 .slogan("The best tech books")
                 .banner(null)

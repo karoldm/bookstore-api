@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -44,7 +43,7 @@ public class StoreServiceTest {
                 .name("bookstore")
                 .slogan("The best tech books")
                 .banner(null)
-                .id(UUID.randomUUID())
+                .id(1L)
                 .build();
     }
 
@@ -52,7 +51,7 @@ public class StoreServiceTest {
     class GetStoreTests {
         @Test
         void shouldThrowNotFoundWhenStoreDoesNotExist() {
-            UUID id = UUID.randomUUID();
+            Long id = 1L;
 
             when(storeRepository.findById(id)).thenReturn(Optional.empty());
 
@@ -83,7 +82,7 @@ public class StoreServiceTest {
 
         @Test
         void shouldThrowNotFoundWhenStoreDoesNotExist() {
-            UUID id = UUID.randomUUID();
+            Long id = 1L;
 
             when(storeRepository.findById(id)).thenReturn(Optional.empty());
 

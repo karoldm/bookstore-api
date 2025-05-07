@@ -28,7 +28,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -130,10 +129,10 @@ public class AuthServiceTest {
                     Optional.empty());
 
             when(userRepository.save(any(AppUser.class)))
-                    .thenReturn(AppUser.builder().id(UUID.randomUUID()).role(Roles.ADMIN).build());
+                    .thenReturn(AppUser.builder().id(1L).role(Roles.ADMIN).build());
 
             when(storeRepository.save(any(Store.class)))
-                    .thenReturn(Store.builder().id(UUID.randomUUID()).build());
+                    .thenReturn(Store.builder().id(1L).build());
 
             when(authenticationConfiguration.getAuthenticationManager())
                     .thenReturn(authenticationManager);
@@ -227,7 +226,7 @@ public class AuthServiceTest {
                     .role(Roles.COMMON)
                     .username("karol.marques")
                     .name("karol marques")
-                    .id(UUID.randomUUID())
+                    .id(1L)
                     .build();
 
             when(userRepository.findByUsername(loginRequestDTO.getUsername()))
@@ -259,7 +258,7 @@ public class AuthServiceTest {
         @Test
         void mustLogin() throws Exception {
             Store store = Store.builder()
-                    .id(UUID.randomUUID())
+                    .id(1L)
                     .name("book store")
                     .slogan("The best tech books")
                     .banner(null)
@@ -269,7 +268,7 @@ public class AuthServiceTest {
                     .role(Roles.ADMIN)
                     .username("karol.marques")
                     .name("karol marques")
-                    .id(UUID.randomUUID())
+                    .id(1L)
                     .store(store)
                     .build();
 

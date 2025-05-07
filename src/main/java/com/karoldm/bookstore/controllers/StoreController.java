@@ -17,8 +17,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/v1/store")
 @AllArgsConstructor
@@ -37,7 +35,7 @@ public class StoreController {
     })
     @PreAuthorize("@storeSecurityService.canAccessStore(principal, #id)")
     ResponseEntity<ResponseStoreDTO> getStoreById(
-            @PathVariable UUID id,
+            @PathVariable Long id,
             @AuthenticationPrincipal Object principal
     ) {
         ResponseStoreDTO response = storeService.getStore(id);
@@ -57,7 +55,7 @@ public class StoreController {
     })
     @PreAuthorize("@storeSecurityService.isStoreAdmin(principal, #id)")
     ResponseEntity<ResponseStoreDTO> updateStore(
-            @PathVariable UUID id,
+            @PathVariable Long id,
             @RequestBody @Valid UpdateStoreDTO updateStoreDTO,
             @AuthenticationPrincipal Object principal
     ) {

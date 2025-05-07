@@ -20,7 +20,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.HashSet;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -40,8 +39,6 @@ public class AdminServiceTest {
     private Store store;
     private UpdateUserDTO updateUserDTO;
 
-    final private UUID testStoreId = UUID.randomUUID();
-
     @BeforeEach
     void setup() {
         updateUserDTO = UpdateUserDTO.builder()
@@ -49,6 +46,7 @@ public class AdminServiceTest {
                 .password("updated password")
                 .build();
 
+        Long testStoreId = 1L;
         store = Store.builder()
                 .id(testStoreId)
                 .name("my store")
@@ -62,7 +60,7 @@ public class AdminServiceTest {
                 .username("admin")
                 .password("admin")
                 .store(store)
-                .id(UUID.randomUUID())
+                .id(2L)
                 .build();
 
         employee = AppUser.builder()
@@ -71,7 +69,7 @@ public class AdminServiceTest {
                 .username("employee")
                 .password("employee")
                 .store(store)
-                .id(UUID.randomUUID())
+                .id(3L)
                 .build();
     }
 

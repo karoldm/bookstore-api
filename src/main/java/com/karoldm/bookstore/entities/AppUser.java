@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.io.Serial;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Getter
@@ -24,7 +23,7 @@ public class AppUser implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private UUID id;
+    private Long id;
 
     @Column
     private String name;

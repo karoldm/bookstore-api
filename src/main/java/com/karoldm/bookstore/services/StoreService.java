@@ -10,14 +10,13 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 public class StoreService {
     private StoreRepository storeRepository;
 
-    public ResponseStoreDTO getStore(UUID id) {
+    public ResponseStoreDTO getStore(Long id) {
         Optional<Store> optionalStore = storeRepository.findById(id);
 
         if (optionalStore.isEmpty()) {
@@ -35,7 +34,7 @@ public class StoreService {
     }
 
     @Transactional
-    public ResponseStoreDTO updateStore(UUID id, UpdateStoreDTO updateStoreDTO) {
+    public ResponseStoreDTO updateStore(Long id, UpdateStoreDTO updateStoreDTO) {
         Optional<Store> optionalStore = storeRepository.findById(id);
 
         if (optionalStore.isEmpty()) {

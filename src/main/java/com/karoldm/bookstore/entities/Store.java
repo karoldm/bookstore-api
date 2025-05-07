@@ -6,7 +6,6 @@ import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.UUID;
 
 @Entity
 @Getter
@@ -20,11 +19,11 @@ public class Store implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private UUID id;
+    private Long id;
     @Column
     private String name;
     @Column
     private String slogan;
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String banner; // base64 image
 }

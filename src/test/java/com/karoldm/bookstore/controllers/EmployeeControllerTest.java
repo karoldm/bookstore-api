@@ -30,7 +30,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -55,7 +54,7 @@ class EmployeeControllerTest {
     @Autowired
     private SecurityFilter securityFilter;
 
-    private final UUID testStoreId = UUID.randomUUID();
+    private final Long testStoreId = 1L;
     private AppUser admin;
     private AppUser employee;
     final private String validToken = "valid-token";
@@ -67,7 +66,7 @@ class EmployeeControllerTest {
     private RegisterUserDTO registerUserDTO;
     private ResponseUserDTO responseUserDTO;
     private UpdateUserDTO updateUserDTO;
-    final private UUID testEmployeeId = UUID.randomUUID();
+    final private Long testEmployeeId = 2L;
 
     private ObjectMapper objectMapper;
 
@@ -94,7 +93,7 @@ class EmployeeControllerTest {
         listEmployees.add(responseUserDTO);
 
         commonUser = AppUser.builder()
-                .id(UUID.randomUUID())
+                .id(3L)
                 .name("common user")
                 .password("common_user")
                 .username("common_user")
@@ -126,7 +125,7 @@ class EmployeeControllerTest {
 
 
         Store anotherStore = Store.builder()
-                .id(UUID.randomUUID())
+                .id(4L)
                 .name("another store")
                 .slogan("The best tech books")
                 .banner(null)

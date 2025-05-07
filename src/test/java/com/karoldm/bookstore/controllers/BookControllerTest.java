@@ -33,7 +33,6 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -59,7 +58,7 @@ class BookControllerTest {
     @Autowired
     private SecurityFilter securityFilter;
 
-    private final UUID testStoreId = UUID.randomUUID();
+    private final Long testStoreId = 1L;
     private AppUser admin;
     private AppUser employee;
     private final String validToken = "valid-token";
@@ -69,7 +68,7 @@ class BookControllerTest {
     private Set<ResponseBookDTO> listBooks;
     private RequestBookDTO requestBookDTO;
     private ResponseBookDTO responseBookDTO;
-    final private UUID testBookId = UUID.randomUUID();
+    final private Long testBookId = 2L;
     final private UpdateBookAvailableDTO updateBookAvailableDTO = UpdateBookAvailableDTO.builder()
             .available(false)
             .build();
@@ -110,7 +109,7 @@ class BookControllerTest {
         ).collect(Collectors.toSet());
 
         commonUser = AppUser.builder()
-                .id(UUID.randomUUID())
+                .id(3L)
                 .name("common user")
                 .password("common_user")
                 .username("common_user")
@@ -142,7 +141,7 @@ class BookControllerTest {
 
 
         Store anotherStore = Store.builder()
-                .id(UUID.randomUUID())
+                .id(4L)
                 .name("another store")
                 .slogan("The best tech books")
                 .banner(null)
@@ -186,7 +185,7 @@ class BookControllerTest {
             verify(appUserRepository, never()).findByUsername(any(String.class));
             verify(storeSecurityService, never()).canAccessStore(any(), any());
             verify(bookService, never()).listAll(
-                    any(UUID.class),
+                    any(Long.class),
                     any(Integer.class),
                     any(Integer.class),
                     any(BooksFilterDTO.class)
@@ -205,7 +204,7 @@ class BookControllerTest {
             verify(appUserRepository, never()).findByUsername(any());
             verify(storeSecurityService, never()).canAccessStore(any(), any());
             verify(bookService, never()).listAll(
-                    any(UUID.class),
+                    any(Long.class),
                     any(Integer.class),
                     any(Integer.class),
                     any(BooksFilterDTO.class)
@@ -231,7 +230,7 @@ class BookControllerTest {
             verify(storeSecurityService, never()).canAccessStore(any(), any());
 
             verify(bookService, never()).listAll(
-                    any(UUID.class),
+                    any(Long.class),
                     any(Integer.class),
                     any(Integer.class),
                     any(BooksFilterDTO.class)
@@ -259,7 +258,7 @@ class BookControllerTest {
                     .canAccessStore(wrongAdmin, testStoreId);
 
             verify(bookService, never()).listAll(
-                    any(UUID.class),
+                    any(Long.class),
                     any(Integer.class),
                     any(Integer.class),
                     any(BooksFilterDTO.class)
@@ -350,7 +349,7 @@ class BookControllerTest {
                     .canAccessStore(wrongEmployee, testStoreId);
 
             verify(bookService, never()).listAll(
-                    any(UUID.class),
+                    any(Long.class),
                     any(Integer.class),
                     any(Integer.class),
                     any(BooksFilterDTO.class)

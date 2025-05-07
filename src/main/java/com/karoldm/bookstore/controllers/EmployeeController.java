@@ -20,7 +20,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/v1/store/{storeId}/employee")
@@ -41,7 +40,7 @@ public class EmployeeController {
     })
     @PreAuthorize("@storeSecurityService.isStoreAdmin(principal, #storeId)")
     ResponseEntity<ResponseUserDTO> createEmployee(
-            @PathVariable UUID storeId,
+            @PathVariable Long storeId,
             @RequestBody @Valid RegisterUserDTO registerUserDTO,
             @AuthenticationPrincipal Object principal
     ) {
@@ -61,7 +60,7 @@ public class EmployeeController {
     })
     @PreAuthorize("@storeSecurityService.isStoreAdmin(principal, #storeId)")
     ResponseEntity<Set<ResponseUserDTO>> listEmployees(
-            @PathVariable UUID storeId,
+            @PathVariable Long storeId,
             @AuthenticationPrincipal Object principal
     ) {
         Set<ResponseUserDTO> listEmployees = employeeService.listEmployees(storeId);
@@ -81,8 +80,8 @@ public class EmployeeController {
     })
     @PreAuthorize("@storeSecurityService.isStoreAdmin(principal, #storeId)")
     ResponseEntity<ResponseUserDTO> updateEmployee(
-            @PathVariable UUID storeId,
-            @PathVariable UUID employeeId,
+            @PathVariable Long storeId,
+            @PathVariable Long employeeId,
             @RequestBody @Valid UpdateUserDTO updateUserDTO,
             @AuthenticationPrincipal Object principal
     ) {
@@ -103,8 +102,8 @@ public class EmployeeController {
     })
     @PreAuthorize("@storeSecurityService.isStoreAdmin(principal, #storeId)")
     ResponseEntity<Void> deleteEmployee(
-            @PathVariable UUID storeId,
-            @PathVariable UUID employeeId,
+            @PathVariable Long storeId,
+            @PathVariable Long employeeId,
             @AuthenticationPrincipal Object principal
     ) {
         employeeService.deleteEmployee(storeId, employeeId);

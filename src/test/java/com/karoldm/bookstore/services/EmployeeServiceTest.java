@@ -21,7 +21,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -42,8 +41,8 @@ public class EmployeeServiceTest {
     private RegisterUserDTO registerUserDTO;
     private UpdateUserDTO updateUserDTO;
 
-    final private UUID testStoreId = UUID.randomUUID();
-    final private UUID testEmployeeId = UUID.randomUUID();
+    final private Long testStoreId = 1L;
+    final private Long testEmployeeId = 2L;
 
     @BeforeEach
     void setup() {

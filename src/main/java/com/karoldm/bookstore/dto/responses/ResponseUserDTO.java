@@ -5,13 +5,11 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.UUID;
-
 @Data
 @Builder
 public class ResponseUserDTO {
     @NotNull
-    private UUID id;
+    private Long id;
     @NotBlank
     private String name;
     @NotBlank

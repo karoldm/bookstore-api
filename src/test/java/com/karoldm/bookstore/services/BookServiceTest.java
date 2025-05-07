@@ -29,7 +29,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -46,8 +45,8 @@ public class BookServiceTest {
     @InjectMocks
     private BookService bookService;
 
-    private UUID storeId;
-    private UUID bookId;
+    private Long storeId;
+    private Long bookId;
     private Store store;
     private Book book;
     private RequestBookDTO requestBookDTO;
@@ -58,8 +57,8 @@ public class BookServiceTest {
         updateBookAvailableDTO = UpdateBookAvailableDTO.builder()
                 .available(true)
                 .build();
-        bookId = UUID.randomUUID();
-        storeId = UUID.randomUUID();
+        bookId = 1L;
+        storeId = 1L;
         store = Store.builder()
                 .id(storeId)
                 .build();

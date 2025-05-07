@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,7 +31,7 @@ public class BookService {
     private StoreRepository storeRepository;
 
     @Transactional
-    public ResponseBookDTO changeAvailable(UUID bookId, UpdateBookAvailableDTO updateBookAvailableDTO) {
+    public ResponseBookDTO changeAvailable(Long bookId, UpdateBookAvailableDTO updateBookAvailableDTO) {
         Optional<Book> optionalBook = bookRepository.findById(bookId);
 
         if (optionalBook.isEmpty()) {
@@ -59,7 +58,7 @@ public class BookService {
     }
 
     @Transactional
-    public void deleteBook(UUID bookId) {
+    public void deleteBook(Long bookId) {
         Optional<Book> optionalBook = bookRepository.findById(bookId);
 
         if (optionalBook.isEmpty()) {
@@ -72,7 +71,7 @@ public class BookService {
     }
 
     @Transactional
-    public ResponseBookDTO createBook(UUID storeId, RequestBookDTO requestBookDTO) {
+    public ResponseBookDTO createBook(Long storeId, RequestBookDTO requestBookDTO) {
         Optional<Store> optionalStore = storeRepository.findById(storeId);
 
         if (optionalStore.isEmpty()) {
@@ -110,7 +109,7 @@ public class BookService {
     }
 
     @Transactional
-    public ResponseBookDTO updateBook(UUID bookId, RequestBookDTO requestBookDTO) {
+    public ResponseBookDTO updateBook(Long bookId, RequestBookDTO requestBookDTO) {
         Optional<Book> optionalBook = bookRepository.findById(bookId);
 
         if (optionalBook.isEmpty()) {
@@ -143,7 +142,7 @@ public class BookService {
     }
 
     public Set<ResponseBookDTO> listAll(
-            UUID storeId,
+            Long storeId,
             int page,
             int size,
             BooksFilterDTO booksFilterDTO
