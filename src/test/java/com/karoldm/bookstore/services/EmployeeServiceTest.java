@@ -119,6 +119,7 @@ public class EmployeeServiceTest {
 
             assertEquals(registerUserDTO.getName(), response.getName());
             assertEquals(registerUserDTO.getUsername(), response.getUsername());
+            assertNotNull(response.getId());
 
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             String encryptedPassword = encoder.encode(registerUserDTO.getPassword());
@@ -252,6 +253,7 @@ public class EmployeeServiceTest {
             assertEquals(employee.getRole().name(), response.getRole());
             assertEquals(employee.getUsername(), response.getUsername());
             assertEquals(employee.getName(), response.getName());
+            assertNotNull(response.getId());
 
             verify(userRepository, times(1)).save(employee);
         }

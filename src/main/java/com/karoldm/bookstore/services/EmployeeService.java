@@ -77,6 +77,7 @@ public class EmployeeService {
                 .username(newEmployee.getUsername())
                 .role(newEmployee.getRole().name())
                 .name(newEmployee.getName())
+                .id(newEmployee.getId())
                 .build();
     }
 
@@ -119,6 +120,7 @@ public class EmployeeService {
                 .name(user.getName())
                 .role(user.getRole().name())
                 .username(user.getUsername())
+                .id(user.getId())
                 .build();
     }
 
