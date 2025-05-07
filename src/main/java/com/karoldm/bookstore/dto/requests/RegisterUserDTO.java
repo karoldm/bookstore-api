@@ -12,6 +12,6 @@ public class RegisterUserDTO {
     private String name;
     @NotBlank
     private String username;
-    @Size(min = 6, message = "Password must be at least 6 characters")
+    @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
 }

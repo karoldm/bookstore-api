@@ -31,7 +31,7 @@ public class AdminService {
         }
 
         if (updateUserDTO.getPassword() != null) {
-            if (updateUserDTO.getPassword().length() < 6) {
+            if (updateUserDTO.getPassword().length() < 8) {
                 throw new InvalidPasswordException();
             }
             String encryptedPassword = new BCryptPasswordEncoder()

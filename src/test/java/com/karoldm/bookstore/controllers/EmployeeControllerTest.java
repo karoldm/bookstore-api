@@ -150,7 +150,7 @@ class EmployeeControllerTest {
         registerUserDTO = RegisterUserDTO.builder()
                 .username("employee.new")
                 .name("employee")
-                .password("123456")
+                .password("12345678")
                 .build();
     }
 

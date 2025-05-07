@@ -214,7 +214,7 @@ public class EmployeeServiceTest {
                     employeeService.updateEmployee(testStoreId, testEmployeeId, updateUserDTO)
             );
 
-            assertEquals("A senha deve possuir pelo menos 6 caracteres.", ex.getMessage());
+            assertEquals("A senha deve possuir pelo menos 8 caracteres.", ex.getMessage());
 
             verify(userRepository, never()).save(any(AppUser.class));
         }

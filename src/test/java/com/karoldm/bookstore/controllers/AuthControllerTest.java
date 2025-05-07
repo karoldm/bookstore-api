@@ -53,7 +53,7 @@ class AuthControllerTest {
         RegisterUserDTO registerUserDTO = RegisterUserDTO.builder()
                 .name("karol marques")
                 .username("karol.marques")
-                .password("123456")
+                .password("12345678")
                 .build();
 
         registerStoreDTO = RegisterStoreDTO.builder()
