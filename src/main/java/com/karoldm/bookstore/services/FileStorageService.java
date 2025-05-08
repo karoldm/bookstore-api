@@ -52,7 +52,7 @@ public class FileStorageService {
             if (fileName != null) {
                 String[] splitFileName = fileName.trim().split("\\.");
                 if(splitFileName.length == 0) {
-                    throw new RuntimeException("Invalid file name or extension");
+                    throw new AmazonS3Exception("Invalid file name or extension");
                 }
                 String fileKey = splitFileName[0] + "-" + key + "." + splitFileName[1];
 
