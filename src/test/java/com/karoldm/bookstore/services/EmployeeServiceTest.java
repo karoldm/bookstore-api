@@ -113,7 +113,7 @@ public class EmployeeServiceTest {
             when(userRepository.findByUsername(registerUserDTO.getUsername()))
                     .thenReturn(Optional.empty());
 
-            when(userRepository.save(any(AppUser.class))).thenReturn(AppUser.builder().build());
+            when(userRepository.save(any(AppUser.class))).thenReturn(AppUser.builder().id(1L).build());
 
             ResponseUserDTO response = employeeService.createEmployee(testStoreId, registerUserDTO);
 

@@ -24,10 +24,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockPart;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -66,12 +70,24 @@ class BookControllerTest {
     private AppUser wrongEmployee;
     private AppUser commonUser;
     private Set<ResponseBookDTO> listBooks;
-    private RequestBookDTO requestBookDTO;
     private ResponseBookDTO responseBookDTO;
     final private Long testBookId = 2L;
     final private UpdateBookAvailableDTO updateBookAvailableDTO = UpdateBookAvailableDTO.builder()
             .available(false)
             .build();
+
+    final private MockMultipartFile coverFile = new MockMultipartFile(
+            "cover",
+            "test-image.jpg",
+            "image/jpeg",
+            new byte[0]
+    );
+    final private MockPart titlePart = new MockPart("title", "Clean Code".getBytes());
+    final private MockPart summaryPart = new MockPart("summary", "A book about writing clean code".getBytes());
+    final private MockPart releasedAtPart = new MockPart("releasedAt", LocalDate.now().toString().getBytes());
+    final private MockPart ratingPart = new MockPart("rating", "5".getBytes());
+    final private MockPart availablePart = new MockPart("available", "true".getBytes());
+    final private MockPart authorPart = new MockPart("author", "Robert C. Martin".getBytes());
 
     private ObjectMapper objectMapper;
 
@@ -91,7 +107,7 @@ class BookControllerTest {
                 .summary("...")
                 .rating(4)
                 .available(false)
-                .cover("")
+                .cover("image-url")
                 .build();
 
         listBooks = BooksMock.books.stream().map(book ->
@@ -120,7 +136,7 @@ class BookControllerTest {
                 .id(testStoreId)
                 .name("my store")
                 .slogan("The best tech books")
-                .banner(null)
+                .banner("image-url")
                 .build();
 
         admin = AppUser.builder()
@@ -144,7 +160,7 @@ class BookControllerTest {
                 .id(4L)
                 .name("another store")
                 .slogan("The best tech books")
-                .banner(null)
+                .banner("image-url")
                 .build();
 
         wrongAdmin = AppUser.builder()
@@ -161,16 +177,6 @@ class BookControllerTest {
                 .username("wrong_employee")
                 .password("wrong_employee")
                 .store(anotherStore)
-                .build();
-
-        requestBookDTO = RequestBookDTO.builder()
-                .title("book test")
-                .summary("...")
-                .cover("")
-                .releasedAt(LocalDate.of(2025, 1, 1))
-                .rating(4)
-                .author("author test")
-                .available(false)
                 .build();
     }
 
@@ -393,14 +399,20 @@ class BookControllerTest {
     class UpdateBookTests {
         @Test
         void mustReturnForbiddenWhenNoTokenProvided() throws Exception {
-            mockMvc.perform(put(baseURL + "/" + testBookId)
-                            .content(objectMapper.writeValueAsString(requestBookDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(MockMvcRequestBuilders.multipart(HttpMethod.PUT, baseURL + "/" + testBookId)
+                            .file(coverFile)
+                            .part(titlePart)
+                            .part(summaryPart)
+                            .part(releasedAtPart)
+                            .part(ratingPart)
+                            .part(availablePart)
+                            .part(authorPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA))
                     .andExpect(status().isForbidden());
 
             verify(appUserRepository, never()).findByUsername(any());
             verify(storeSecurityService, never()).isStoreAdmin(any(), any());
-            verify(bookService, never()).updateBook(testBookId, requestBookDTO);
+            verify(bookService, never()).updateBook(any(), any());
         }
 
         @Test
@@ -408,15 +420,22 @@ class BookControllerTest {
             when(tokenService.validateToken("invalid-token"))
                     .thenThrow(new JWTVerificationException("Invalid token"));
 
-            mockMvc.perform(put(baseURL + "/" + testBookId)
-                            .header("Authorization", "invalid-token")
-                            .content(objectMapper.writeValueAsString(requestBookDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+
+            mockMvc.perform(MockMvcRequestBuilders.multipart(HttpMethod.PUT, baseURL + "/" + testBookId)
+                            .file(coverFile)
+                            .part(titlePart)
+                            .part(summaryPart)
+                            .part(releasedAtPart)
+                            .part(ratingPart)
+                            .part(availablePart)
+                            .part(authorPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .header("Authorization", "invalid-token"))
                     .andExpect(status().isForbidden());
 
             verify(appUserRepository, never()).findByUsername(any());
             verify(storeSecurityService, never()).isStoreAdmin(any(), any());
-            verify(bookService, never()).updateBook(testBookId, requestBookDTO);
+            verify(bookService, never()).updateBook(any(), any());
         }
 
         @Test
@@ -427,10 +446,17 @@ class BookControllerTest {
                     Optional.of(commonUser)
             );
 
-            mockMvc.perform(put(baseURL + "/" + testBookId)
-                            .header("Authorization", validToken)
-                            .content(objectMapper.writeValueAsString(requestBookDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+
+            mockMvc.perform(MockMvcRequestBuilders.multipart(HttpMethod.PUT, baseURL + "/" + testBookId)
+                            .file(coverFile)
+                            .part(titlePart)
+                            .part(summaryPart)
+                            .part(releasedAtPart)
+                            .part(ratingPart)
+                            .part(availablePart)
+                            .part(authorPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .header("Authorization", validToken))
                     .andExpect(status().isForbidden());
 
             verify(appUserRepository, times(1))
@@ -438,7 +464,7 @@ class BookControllerTest {
 
             verify(storeSecurityService, never()).isStoreAdmin(any(), any());
 
-            verify(bookService, never()).updateBook(testBookId, requestBookDTO);
+            verify(bookService, never()).updateBook(any(), any());
         }
 
         @Test
@@ -451,10 +477,17 @@ class BookControllerTest {
 
             when(storeSecurityService.isStoreAdmin(wrongAdmin, testStoreId)).thenReturn(false);
 
-            mockMvc.perform(put(baseURL + "/" + testBookId)
-                            .header("Authorization", validToken)
-                            .content(objectMapper.writeValueAsString(requestBookDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+
+            mockMvc.perform(MockMvcRequestBuilders.multipart(HttpMethod.PUT, baseURL + "/" + testBookId)
+                            .file(coverFile)
+                            .part(titlePart)
+                            .part(summaryPart)
+                            .part(releasedAtPart)
+                            .part(ratingPart)
+                            .part(availablePart)
+                            .part(authorPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .header("Authorization", validToken))
                     .andExpect(status().isForbidden());
 
             verify(appUserRepository, times(1))
@@ -463,7 +496,7 @@ class BookControllerTest {
             verify(storeSecurityService, times(1))
                     .isStoreAdmin(wrongAdmin, testStoreId);
 
-            verify(bookService, never()).updateBook(testBookId, requestBookDTO);
+            verify(bookService, never()).updateBook(any(), any());
         }
 
         @Test
@@ -476,13 +509,20 @@ class BookControllerTest {
 
             when(storeSecurityService.isStoreAdmin(admin, testStoreId)).thenReturn(true);
 
-            when(bookService.updateBook(testBookId, requestBookDTO))
+            when(bookService.updateBook(any(), any()))
                     .thenReturn(responseBookDTO);
 
-            mockMvc.perform(put(baseURL + "/" + testBookId)
-                            .header("Authorization", validToken)
-                            .content(objectMapper.writeValueAsString(requestBookDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+
+            mockMvc.perform(MockMvcRequestBuilders.multipart(HttpMethod.PUT, baseURL + "/" + testBookId)
+                            .file(coverFile)
+                            .part(titlePart)
+                            .part(summaryPart)
+                            .part(releasedAtPart)
+                            .part(ratingPart)
+                            .part(availablePart)
+                            .part(authorPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .header("Authorization", validToken))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("cover").value(responseBookDTO.getCover()))
                     .andExpect(jsonPath("title").value(responseBookDTO.getTitle()))
@@ -501,7 +541,7 @@ class BookControllerTest {
                     .findByUsername(admin.getUsername());
 
             verify(bookService, times(1))
-                    .updateBook(testBookId, requestBookDTO);
+                    .updateBook(any(), any());
         }
 
         @Test
@@ -513,10 +553,17 @@ class BookControllerTest {
                     Optional.of(wrongEmployee)
             );
 
-            mockMvc.perform(put(baseURL + "/" + testBookId)
-                            .header("Authorization", validToken)
-                            .content(objectMapper.writeValueAsString(requestBookDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+
+            mockMvc.perform(MockMvcRequestBuilders.multipart(HttpMethod.PUT, baseURL + "/" + testBookId)
+                            .file(coverFile)
+                            .part(titlePart)
+                            .part(summaryPart)
+                            .part(releasedAtPart)
+                            .part(ratingPart)
+                            .part(availablePart)
+                            .part(authorPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .header("Authorization", validToken))
                     .andExpect(status().isForbidden());
 
             verify(appUserRepository, times(1))
@@ -525,7 +572,7 @@ class BookControllerTest {
             verify(storeSecurityService, never())
                     .isStoreAdmin(wrongEmployee, testStoreId);
 
-            verify(bookService, never()).updateBook(testBookId, requestBookDTO);
+            verify(bookService, never()).updateBook(any(), any());
         }
 
         @Test
@@ -537,10 +584,16 @@ class BookControllerTest {
                     Optional.of(employee)
             );
 
-            mockMvc.perform(put(baseURL + "/" + testBookId)
-                            .header("Authorization", validToken)
-                            .content(objectMapper.writeValueAsString(requestBookDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(MockMvcRequestBuilders.multipart(HttpMethod.PUT, baseURL + "/" + testBookId)
+                            .file(coverFile)
+                            .part(titlePart)
+                            .part(summaryPart)
+                            .part(releasedAtPart)
+                            .part(ratingPart)
+                            .part(availablePart)
+                            .part(authorPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .header("Authorization", validToken))
                     .andExpect(status().isForbidden());
 
             verify(appUserRepository, times(1))
@@ -549,7 +602,7 @@ class BookControllerTest {
             verify(storeSecurityService, never())
                     .isStoreAdmin(employee, testStoreId);
 
-            verify(bookService, never()).updateBook(testBookId, requestBookDTO);
+            verify(bookService, never()).updateBook(any(), any());
         }
 
         @Test
@@ -562,12 +615,18 @@ class BookControllerTest {
 
             when(storeSecurityService.isStoreAdmin(admin, testStoreId)).thenReturn(true);
 
-            RequestBookDTO invalidRequestBookDTO = RequestBookDTO.builder().build();
+            MockPart invalidTitle =  new MockPart("title", "".getBytes());
 
-            mockMvc.perform(put(baseURL + "/" + testBookId)
-                            .header("Authorization", validToken)
-                            .content(objectMapper.writeValueAsString(invalidRequestBookDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(MockMvcRequestBuilders.multipart(HttpMethod.PUT, baseURL + "/" + testBookId)
+                            .file(coverFile)
+                            .part(invalidTitle)
+                            .part(summaryPart)
+                            .part(releasedAtPart)
+                            .part(ratingPart)
+                            .part(availablePart)
+                            .part(authorPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .header("Authorization", validToken))
                     .andExpect(status().isBadRequest());
 
             verify(storeSecurityService, never()).isStoreAdmin(admin, testStoreId);
@@ -575,7 +634,7 @@ class BookControllerTest {
             verify(appUserRepository, times(1))
                     .findByUsername(admin.getUsername());
 
-            verify(bookService, never()).updateBook(testBookId, invalidRequestBookDTO);
+            verify(bookService, never()).updateBook(any(), any());
         }
     }
 
@@ -939,14 +998,22 @@ class BookControllerTest {
     class CreateBookTests {
         @Test
         void mustReturnForbiddenWhenNoTokenProvided() throws Exception {
-            mockMvc.perform(post(baseURL)
-                            .content(objectMapper.writeValueAsString(requestBookDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+
+            mockMvc.perform(MockMvcRequestBuilders.multipart(
+                    HttpMethod.POST, baseURL)
+                            .file(coverFile)
+                            .part(titlePart)
+                            .part(summaryPart)
+                            .part(releasedAtPart)
+                            .part(ratingPart)
+                            .part(availablePart)
+                            .part(authorPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA))
                     .andExpect(status().isForbidden());
 
             verify(appUserRepository, never()).findByUsername(any());
             verify(storeSecurityService, never()).isStoreAdmin(any(), any());
-            verify(bookService, never()).createBook(testStoreId, requestBookDTO);
+            verify(bookService, never()).createBook(any(), any());
         }
 
         @Test
@@ -954,15 +1021,22 @@ class BookControllerTest {
             when(tokenService.validateToken("invalid-token"))
                     .thenThrow(new JWTVerificationException("Invalid token"));
 
-            mockMvc.perform(post(baseURL)
-                            .header("Authorization", "invalid-token")
-                            .content(objectMapper.writeValueAsString(requestBookDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(MockMvcRequestBuilders.multipart(
+                    HttpMethod.POST, baseURL)
+                            .file(coverFile)
+                            .part(titlePart)
+                            .part(summaryPart)
+                            .part(releasedAtPart)
+                            .part(ratingPart)
+                            .part(availablePart)
+                            .part(authorPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .header("Authorization", "invalid-token"))
                     .andExpect(status().isForbidden());
 
             verify(appUserRepository, never()).findByUsername(any());
             verify(storeSecurityService, never()).isStoreAdmin(any(), any());
-            verify(bookService, never()).createBook(testStoreId, requestBookDTO);
+            verify(bookService, never()).createBook(any(), any());
         }
 
         @Test
@@ -973,10 +1047,17 @@ class BookControllerTest {
                     Optional.of(commonUser)
             );
 
-            mockMvc.perform(post(baseURL)
-                            .header("Authorization", validToken)
-                            .content(objectMapper.writeValueAsString(requestBookDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(MockMvcRequestBuilders.multipart(
+                    HttpMethod.POST, baseURL)
+                            .file(coverFile)
+                            .part(titlePart)
+                            .part(summaryPart)
+                            .part(releasedAtPart)
+                            .part(ratingPart)
+                            .part(availablePart)
+                            .part(authorPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .header("Authorization", validToken))
                     .andExpect(status().isForbidden());
 
             verify(appUserRepository, times(1))
@@ -984,7 +1065,7 @@ class BookControllerTest {
 
             verify(storeSecurityService, never()).isStoreAdmin(any(), any());
 
-            verify(bookService, never()).createBook(testStoreId, requestBookDTO);
+            verify(bookService, never()).createBook(any(), any());
         }
 
         @Test
@@ -997,10 +1078,17 @@ class BookControllerTest {
 
             when(storeSecurityService.isStoreAdmin(wrongAdmin, testStoreId)).thenReturn(false);
 
-            mockMvc.perform(post(baseURL)
-                            .header("Authorization", validToken)
-                            .content(objectMapper.writeValueAsString(requestBookDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(MockMvcRequestBuilders.multipart(
+                    HttpMethod.POST, baseURL)
+                            .file(coverFile)
+                            .part(titlePart)
+                            .part(summaryPart)
+                            .part(releasedAtPart)
+                            .part(ratingPart)
+                            .part(availablePart)
+                            .part(authorPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .header("Authorization", validToken))
                     .andExpect(status().isForbidden());
 
             verify(appUserRepository, times(1))
@@ -1009,7 +1097,7 @@ class BookControllerTest {
             verify(storeSecurityService, times(1))
                     .isStoreAdmin(wrongAdmin, testStoreId);
 
-            verify(bookService, never()).createBook(testStoreId, requestBookDTO);
+            verify(bookService, never()).createBook(any(), any());
         }
 
         @Test
@@ -1022,23 +1110,30 @@ class BookControllerTest {
 
             when(storeSecurityService.isStoreAdmin(admin, testStoreId)).thenReturn(true);
 
-            when(bookService.createBook(testStoreId, requestBookDTO))
+            when(bookService.createBook(any(), any()))
                     .thenReturn(responseBookDTO);
 
-            mockMvc.perform(post(baseURL)
-                            .header("Authorization", validToken)
-                            .content(objectMapper.writeValueAsString(requestBookDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(MockMvcRequestBuilders.multipart(
+                    HttpMethod.POST, baseURL)
+                            .file(coverFile)
+                            .part(titlePart)
+                            .part(summaryPart)
+                            .part(releasedAtPart)
+                            .part(ratingPart)
+                            .part(availablePart)
+                            .part(authorPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .header("Authorization", validToken))
                     .andExpect(status().isCreated())
-                    .andExpect(jsonPath("cover").value(responseBookDTO.getCover()))
-                    .andExpect(jsonPath("title").value(responseBookDTO.getTitle()))
-                    .andExpect(jsonPath("id").value(responseBookDTO.getId().toString()))
-                    .andExpect(jsonPath("summary").value(responseBookDTO.getSummary()))
-                    .andExpect(jsonPath("available").value(responseBookDTO.isAvailable()))
-                    .andExpect(jsonPath("rating").value(responseBookDTO.getRating()))
-                    .andExpect(jsonPath("releasedAt").value("05/05/1889"))
-                    .andExpect(jsonPath("createdAt").value("01/01/2025"))
-                    .andExpect(jsonPath("author").value(responseBookDTO.getAuthor()));
+                    .andExpect(jsonPath("$.title").value(responseBookDTO.getTitle()))
+                    .andExpect(jsonPath("$.id").value(responseBookDTO.getId().toString()))
+                    .andExpect(jsonPath("$.summary").value(responseBookDTO.getSummary()))
+                    .andExpect(jsonPath("$.available").value(responseBookDTO.isAvailable()))
+                    .andExpect(jsonPath("$.rating").value(responseBookDTO.getRating()))
+                    .andExpect(jsonPath("$.releasedAt").value("05/05/1889"))
+                    .andExpect(jsonPath("$.createdAt").value("01/01/2025"))
+                    .andExpect(jsonPath("$.author").value(responseBookDTO.getAuthor()))
+                    .andExpect(jsonPath("$.cover").value(responseBookDTO.getCover()));
 
             verify(storeSecurityService, times(1))
                     .isStoreAdmin(admin, testStoreId);
@@ -1047,7 +1142,7 @@ class BookControllerTest {
                     .findByUsername(admin.getUsername());
 
             verify(bookService, times(1))
-                    .createBook(testStoreId, requestBookDTO);
+                    .createBook(any(), any());
         }
 
         @Test
@@ -1058,10 +1153,17 @@ class BookControllerTest {
                     Optional.of(wrongEmployee)
             );
 
-            mockMvc.perform(post(baseURL)
-                            .header("Authorization", validToken)
-                            .content(objectMapper.writeValueAsString(requestBookDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(MockMvcRequestBuilders.multipart(
+                    HttpMethod.POST, baseURL)
+                            .file(coverFile)
+                            .part(titlePart)
+                            .part(summaryPart)
+                            .part(releasedAtPart)
+                            .part(ratingPart)
+                            .part(availablePart)
+                            .part(authorPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .header("Authorization", validToken))
                     .andExpect(status().isForbidden());
 
             verify(appUserRepository, times(1))
@@ -1070,7 +1172,7 @@ class BookControllerTest {
             verify(storeSecurityService, never())
                     .isStoreAdmin(wrongEmployee, testStoreId);
 
-            verify(bookService, never()).createBook(testStoreId, requestBookDTO);
+            verify(bookService, never()).createBook(any(), any());
         }
 
         @Test
@@ -1081,10 +1183,17 @@ class BookControllerTest {
                     Optional.of(employee)
             );
 
-            mockMvc.perform(post(baseURL)
-                            .header("Authorization", validToken)
-                            .content(objectMapper.writeValueAsString(requestBookDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(MockMvcRequestBuilders.multipart(
+                    HttpMethod.POST, baseURL)
+                            .file(coverFile)
+                            .part(titlePart)
+                            .part(summaryPart)
+                            .part(releasedAtPart)
+                            .part(ratingPart)
+                            .part(availablePart)
+                            .part(authorPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .header("Authorization", validToken))
                     .andExpect(status().isForbidden());
 
             verify(appUserRepository, times(1))
@@ -1093,7 +1202,7 @@ class BookControllerTest {
             verify(storeSecurityService, never())
                     .isStoreAdmin(employee, testStoreId);
 
-            verify(bookService, never()).createBook(testStoreId, requestBookDTO);
+            verify(bookService, never()).createBook(any(), any());
         }
 
         @Test
@@ -1106,12 +1215,19 @@ class BookControllerTest {
 
             when(storeSecurityService.isStoreAdmin(admin, testStoreId)).thenReturn(true);
 
-            RequestBookDTO invalidRequestBookDTO = RequestBookDTO.builder().build();
+            MockPart invalidTitle = new MockPart("title", "".getBytes());
 
-            mockMvc.perform(post(baseURL)
-                            .header("Authorization", validToken)
-                            .content(objectMapper.writeValueAsString(invalidRequestBookDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(MockMvcRequestBuilders.multipart(
+                    HttpMethod.POST, baseURL)
+                            .file(coverFile)
+                            .part(invalidTitle)
+                            .part(summaryPart)
+                            .part(releasedAtPart)
+                            .part(ratingPart)
+                            .part(availablePart)
+                            .part(authorPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .header("Authorization", validToken))
                     .andExpect(status().isBadRequest());
 
             verify(storeSecurityService, never()).isStoreAdmin(admin, testStoreId);
@@ -1119,7 +1235,7 @@ class BookControllerTest {
             verify(appUserRepository, times(1))
                     .findByUsername(admin.getUsername());
 
-            verify(bookService, never()).createBook(testStoreId, invalidRequestBookDTO);
+            verify(bookService, never()).createBook(any(), any());
         }
     }
 }

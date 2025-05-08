@@ -24,6 +24,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.mock.web.MockMultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -41,6 +42,8 @@ public class BookServiceTest {
     private BookRepository bookRepository;
     @Mock
     private StoreRepository storeRepository;
+    @Mock
+    private FileStorageService fileStorageService;
 
     @InjectMocks
     private BookService bookService;
@@ -51,6 +54,12 @@ public class BookServiceTest {
     private Book book;
     private RequestBookDTO requestBookDTO;
     private UpdateBookAvailableDTO updateBookAvailableDTO;
+    final private MockMultipartFile mockMultipartFile = new MockMultipartFile(
+            "image",
+            "test-image.jpg",
+            "image/jpeg",
+            new byte[0]
+    );
 
     @BeforeEach
     void setup() {
@@ -65,7 +74,7 @@ public class BookServiceTest {
         requestBookDTO = RequestBookDTO.builder()
                 .title("book test")
                 .summary("...")
-                .cover("")
+                .cover(mockMultipartFile)
                 .releasedAt(LocalDate.of(2025, 1, 1))
                 .rating(4)
                 .author("author test")
@@ -130,10 +139,13 @@ public class BookServiceTest {
                     Book.builder().id(bookId).build()
             );
 
+            when(fileStorageService.uploadFile(any())).thenReturn("image-url");
+
             ResponseBookDTO responseBookDTO = bookService.createBook(storeId, requestBookDTO);
 
             verify(storeRepository, times(1)).findById(storeId);
             verify(bookRepository, times(1)).save(any(Book.class));
+            verify(fileStorageService, times(1)).uploadFile(any());
 
             assertEquals(bookId, responseBookDTO.getId());
             assertEquals(requestBookDTO.getTitle(), responseBookDTO.getTitle());
@@ -142,7 +154,7 @@ public class BookServiceTest {
             assertEquals(requestBookDTO.getRating(), responseBookDTO.getRating());
             assertEquals(requestBookDTO.isAvailable(), responseBookDTO.isAvailable());
             assertEquals(requestBookDTO.getAuthor(), responseBookDTO.getAuthor());
-            assertEquals(requestBookDTO.getCover(), responseBookDTO.getCover());
+            assertEquals("image-url", responseBookDTO.getCover());
             assertEquals(LocalDate.now(), responseBookDTO.getCreatedAt());
         }
     }
@@ -191,10 +203,12 @@ public class BookServiceTest {
         @Test
         void mustUpdateBook() {
             when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
+            when(fileStorageService.uploadFile(any())).thenReturn("image-url");
+
             requestBookDTO.setTitle("updated book");
             requestBookDTO.setSummary("updated summary");
             requestBookDTO.setRating(3);
-            requestBookDTO.setCover(null);
+            requestBookDTO.setCover(mockMultipartFile);
             requestBookDTO.setAuthor("updated author");
             requestBookDTO.setReleasedAt(LocalDate.of(1990, 12, 12));
 
@@ -202,6 +216,8 @@ public class BookServiceTest {
 
             verify(bookRepository, times(1)).findById(bookId);
             verify(bookRepository, times(1)).save(any(Book.class));
+            verify(fileStorageService, times(1)).removeFileByUrl(any());
+            verify(fileStorageService, times(1)).uploadFile(any());
 
             assertEquals(requestBookDTO.getTitle(), responseBookDTO.getTitle());
             assertEquals(requestBookDTO.getSummary(), responseBookDTO.getSummary());
@@ -209,7 +225,7 @@ public class BookServiceTest {
             assertEquals(requestBookDTO.getRating(), responseBookDTO.getRating());
             assertEquals(requestBookDTO.isAvailable(), responseBookDTO.isAvailable());
             assertEquals(requestBookDTO.getAuthor(), responseBookDTO.getAuthor());
-            assertEquals(requestBookDTO.getCover(), responseBookDTO.getCover());
+            assertEquals("image-url", responseBookDTO.getCover());
 
             assertEquals(book.getCreatedAt(), responseBookDTO.getCreatedAt());
             assertEquals(book.getId(), responseBookDTO.getId());

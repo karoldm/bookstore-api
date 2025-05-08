@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,7 +28,7 @@ import java.util.Set;
 public class BookController {
     private BookService bookService;
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "create new book",
             description = "allow admin create new book on your store")
@@ -41,7 +42,7 @@ public class BookController {
     @PreAuthorize("@storeSecurityService.isStoreAdmin(principal, #storeId)")
     ResponseEntity<ResponseBookDTO> createBook(
             @PathVariable Long storeId,
-            @RequestBody @Valid RequestBookDTO requestBookDTO,
+            @ModelAttribute @Valid RequestBookDTO requestBookDTO,
             @AuthenticationPrincipal Object principal
     ) {
         ResponseBookDTO responseBookDTO = bookService.createBook(storeId, requestBookDTO);
@@ -68,7 +69,7 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PutMapping("/{bookId}")
+    @PutMapping(value="/{bookId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "update book",
             description = "allow admin update a book on your store")
@@ -83,7 +84,7 @@ public class BookController {
     ResponseEntity<ResponseBookDTO> updateBook(
             @PathVariable Long storeId,
             @PathVariable Long bookId,
-            @RequestBody @Valid RequestBookDTO requestBookDTO,
+            @ModelAttribute @Valid RequestBookDTO requestBookDTO,
             @AuthenticationPrincipal Object principal
     ) {
         ResponseBookDTO responseBookDTO = bookService.updateBook(bookId, requestBookDTO);

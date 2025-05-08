@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -15,7 +16,6 @@ public class RequestBookDTO {
     @NotNull
     private String summary;
     @NotNull
-    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate releasedAt;
     @Min(1)
     @Max(5)
@@ -24,5 +24,5 @@ public class RequestBookDTO {
     private boolean available;
     @NotEmpty
     private String author;
-    private String cover;
+    private MultipartFile cover;
 }

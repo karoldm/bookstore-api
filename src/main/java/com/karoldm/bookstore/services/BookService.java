@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 public class BookService {
     private BookRepository bookRepository;
     private StoreRepository storeRepository;
+    private FileStorageService fileStorageService;
 
     @Transactional
     public ResponseBookDTO changeAvailable(Long bookId, UpdateBookAvailableDTO updateBookAvailableDTO) {
@@ -86,11 +87,15 @@ public class BookService {
                 .summary(requestBookDTO.getSummary())
                 .releasedAt(requestBookDTO.getReleasedAt())
                 .available(requestBookDTO.isAvailable())
-                .cover(requestBookDTO.getCover())
                 .createdAt(LocalDate.now())
                 .store(store)
                 .rating(requestBookDTO.getRating())
                 .build();
+
+        if(requestBookDTO.getCover() != null) {
+            String url = fileStorageService.uploadFile(requestBookDTO.getCover());
+            book.setCover(url);
+        }
 
         Book savedBook = bookRepository.save(book);
         book.setId(savedBook.getId());
@@ -123,8 +128,15 @@ public class BookService {
         book.setRating(requestBookDTO.getRating());
         book.setSummary(requestBookDTO.getSummary());
         book.setAvailable(requestBookDTO.isAvailable());
-        book.setCover(requestBookDTO.getCover());
         book.setReleasedAt(requestBookDTO.getReleasedAt());
+
+        if(requestBookDTO.getCover() != null) {
+            if(book.getCover() != null){
+                fileStorageService.removeFileByUrl(book.getCover());
+            }
+            String url = fileStorageService.uploadFile(requestBookDTO.getCover());
+            book.setCover(url);
+        }
 
         bookRepository.save(book);
 

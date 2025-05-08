@@ -50,7 +50,6 @@ class AdminControllerTest {
     @Autowired
     private SecurityFilter securityFilter;
 
-    private final Long testStoreId = 1L;
     private AppUser admin;
     private AppUser employee;
     final private String validToken = "valid-token";
@@ -89,6 +88,7 @@ class AdminControllerTest {
                 .role(Roles.COMMON)
                 .build();
 
+        Long testStoreId = 1L;
         Store store = Store.builder()
                 .id(testStoreId)
                 .name("my store")

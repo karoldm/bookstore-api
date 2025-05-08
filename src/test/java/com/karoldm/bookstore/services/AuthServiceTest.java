@@ -2,7 +2,6 @@ package com.karoldm.bookstore.services;
 
 import com.karoldm.bookstore.dto.requests.LoginRequestDTO;
 import com.karoldm.bookstore.dto.requests.RegisterStoreDTO;
-import com.karoldm.bookstore.dto.requests.RegisterUserDTO;
 import com.karoldm.bookstore.dto.responses.ResponseAuthDTO;
 import com.karoldm.bookstore.entities.AppUser;
 import com.karoldm.bookstore.entities.Store;
@@ -20,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -51,24 +51,27 @@ public class AuthServiceTest {
     private UserDetails userDetails;
     @Mock
     private TokenService tokenService;
+    @Mock
+    private FileStorageService fileStorageService;
 
-    private RegisterUserDTO registerUserDTO;
     private RegisterStoreDTO registerStoreDTO;
     private LoginRequestDTO loginRequestDTO;
 
     @BeforeEach
     void setup() {
 
-        registerUserDTO = RegisterUserDTO.builder()
-                .name("karol marques")
-                .username("karol.marques")
-                .password("123456")
-                .build();
-
+        MockMultipartFile mockMultipartFile = new MockMultipartFile(
+                "image",
+                "test-image.jpg",
+                "image/jpeg",
+                new byte[0]
+        );
         registerStoreDTO = RegisterStoreDTO.builder()
-                .admin(registerUserDTO)
+                .adminName("karol marques")
+                .password("12345678")
+                .username("karol.marques")
                 .name("book store")
-                .banner(null)
+                .banner(mockMultipartFile)
                 .slogan("The best tech books")
                 .build();
 
@@ -82,24 +85,24 @@ public class AuthServiceTest {
     class RegisterTests {
         @Test
         void mustThrowUserAlreadyExist() {
-            when(userRepository.findByUsername(registerUserDTO.getUsername()))
+            when(userRepository.findByUsername(registerStoreDTO.getUsername()))
                     .thenReturn(Optional.of(AppUser.builder().build()));
 
             Exception exception = assertThrows(UsernameAlreadyExist.class, () -> {
                 authService.register(registerStoreDTO);
             });
 
-            assertEquals("Já existe um usuário com o username " + registerUserDTO.getUsername(),
+            assertEquals("Já existe um usuário com o username " + registerStoreDTO.getUsername(),
                     exception.getMessage());
 
             verify(userRepository, times(1))
-                    .findByUsername(registerUserDTO.getUsername());
+                    .findByUsername(registerStoreDTO.getUsername());
         }
 
 
         @Test
         void mustThrowStoreAlreadyExist() {
-            when(userRepository.findByUsername(registerUserDTO.getUsername()))
+            when(userRepository.findByUsername(registerStoreDTO.getUsername()))
                     .thenReturn(Optional.empty());
 
             when(storeRepository.findByName(registerStoreDTO.getName())).thenReturn(
@@ -113,7 +116,7 @@ public class AuthServiceTest {
                     exception.getMessage());
 
             verify(userRepository, times(1))
-                    .findByUsername(registerUserDTO.getUsername());
+                    .findByUsername(registerStoreDTO.getUsername());
 
             verify(storeRepository, times(1))
                     .findByName(registerStoreDTO.getName());
@@ -122,7 +125,7 @@ public class AuthServiceTest {
 
         @Test
         void mustRegister() throws Exception {
-            when(userRepository.findByUsername(registerUserDTO.getUsername()))
+            when(userRepository.findByUsername(registerStoreDTO.getUsername()))
                     .thenReturn(Optional.empty());
 
             when(storeRepository.findByName(registerStoreDTO.getName())).thenReturn(
@@ -141,10 +144,12 @@ public class AuthServiceTest {
 
             when(authentication.getPrincipal()).thenReturn(userDetails);
 
-            when(userDetails.getUsername()).thenReturn(registerUserDTO.getUsername());
+            when(userDetails.getUsername()).thenReturn(registerStoreDTO.getUsername());
 
             when(tokenService.generateToken(any(String.class))).thenReturn("token");
             when(tokenService.generateRefreshToken(any(String.class))).thenReturn("refresh-token");
+
+            when(fileStorageService.uploadFile(any())).thenReturn("image-url");
 
             ResponseAuthDTO responseAuthDTO = authService.register(registerStoreDTO);
 
@@ -154,12 +159,16 @@ public class AuthServiceTest {
 
             assertEquals("book store", responseAuthDTO.getStore().getName());
             assertEquals("The best tech books", responseAuthDTO.getStore().getSlogan());
+            assertEquals("image-url", responseAuthDTO.getStore().getBanner());
 
             assertEquals("token", responseAuthDTO.getToken());
             assertEquals("refresh-token", responseAuthDTO.getRefreshToken());
 
             verify(userRepository, times(1))
-                    .findByUsername(registerUserDTO.getUsername());
+                    .findByUsername(registerStoreDTO.getUsername());
+
+            verify(fileStorageService, times(1))
+                    .uploadFile(any());
 
             verify(storeRepository, times(1))
                     .findByName(registerStoreDTO.getName());
@@ -301,7 +310,7 @@ public class AuthServiceTest {
             assertEquals("refresh-token", responseAuthDTO.getRefreshToken());
 
             verify(userRepository, times(1))
-                    .findByUsername(registerUserDTO.getUsername());
+                    .findByUsername(registerStoreDTO.getUsername());
 
             verify(authenticationManager, times(1))
                     .authenticate(any(UsernamePasswordAuthenticationToken.class));

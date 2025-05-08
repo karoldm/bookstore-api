@@ -29,7 +29,7 @@ public class Book {
     private boolean available;
     @Column
     private int rating;
-    @Column(columnDefinition = "TEXT")
+    @Column
     private String cover;
     @Column
     private LocalDate createdAt;

@@ -2,7 +2,6 @@ package com.karoldm.bookstore.services;
 
 import com.karoldm.bookstore.dto.requests.LoginRequestDTO;
 import com.karoldm.bookstore.dto.requests.RegisterStoreDTO;
-import com.karoldm.bookstore.dto.requests.RegisterUserDTO;
 import com.karoldm.bookstore.dto.responses.ResponseAuthDTO;
 import com.karoldm.bookstore.dto.responses.ResponseStoreDTO;
 import com.karoldm.bookstore.dto.responses.ResponseUserDTO;
@@ -36,13 +35,14 @@ public class AuthService implements UserDetailsService {
     private StoreRepository storeRepository;
     private TokenService tokenService;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private FileStorageService fileStorageService;
 
     @Transactional
     public ResponseAuthDTO register(@NotNull RegisterStoreDTO registerDTO) throws Exception {
-        Optional<AppUser> existingUser = userRepository.findByUsername(registerDTO.getAdmin().getUsername());
+        Optional<AppUser> existingUser = userRepository.findByUsername(registerDTO.getUsername());
 
         if (existingUser.isPresent()) {
-            throw new UsernameAlreadyExist(registerDTO.getAdmin().getUsername());
+            throw new UsernameAlreadyExist(registerDTO.getUsername());
         }
 
         Optional<Store> existingStore = storeRepository.findByName(registerDTO.getName());
@@ -52,24 +52,26 @@ public class AuthService implements UserDetailsService {
         }
 
         String encryptedPassword = new BCryptPasswordEncoder()
-                .encode(registerDTO.getAdmin().getPassword());
+                .encode(registerDTO.getPassword());
 
         Store newStore = Store.builder()
                 .name(registerDTO.getName())
-                .banner(registerDTO.getBanner())
                 .slogan(registerDTO.getSlogan())
                 .build();
+
+        if(registerDTO.getBanner() != null) {
+            String url = fileStorageService.uploadFile(registerDTO.getBanner());
+            newStore.setBanner(url);
+        }
 
         Store savedStore = storeRepository.save(newStore);
 
         newStore.setId(savedStore.getId());
 
-        RegisterUserDTO registerUserDTO = registerDTO.getAdmin();
-
         AppUser newAdmin = AppUser.builder()
-                .username(registerUserDTO.getUsername())
+                .username(registerDTO.getUsername())
                 .password(encryptedPassword)
-                .name(registerUserDTO.getName())
+                .name(registerDTO.getAdminName())
                 .role(Roles.ADMIN)
                 .store(newStore)
                 .build();
@@ -79,7 +81,7 @@ public class AuthService implements UserDetailsService {
         newAdmin.setId(savedAdmin.getId());
 
         UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(
-                registerUserDTO.getUsername(), registerUserDTO.getPassword());
+                registerDTO.getUsername(), registerDTO.getPassword());
 
         var auth = authenticationConfiguration.getAuthenticationManager()
                 .authenticate(usernamePassword);

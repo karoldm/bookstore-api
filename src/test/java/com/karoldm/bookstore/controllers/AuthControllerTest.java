@@ -1,9 +1,9 @@
 package com.karoldm.bookstore.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.karoldm.bookstore.dto.requests.LoginRequestDTO;
 import com.karoldm.bookstore.dto.requests.RegisterStoreDTO;
-import com.karoldm.bookstore.dto.requests.RegisterUserDTO;
 import com.karoldm.bookstore.dto.responses.ResponseAuthDTO;
 import com.karoldm.bookstore.dto.responses.ResponseStoreDTO;
 import com.karoldm.bookstore.dto.responses.ResponseUserDTO;
@@ -20,11 +20,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockPart;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,20 +49,27 @@ class AuthControllerTest {
     private RegisterStoreDTO registerStoreDTO;
     private LoginRequestDTO loginRequestDTO;
 
+    final private MockMultipartFile bannerFile = new MockMultipartFile(
+            "image",
+            "test-image.jpg",
+            "image/jpeg",
+            new byte[0]
+    );
+    private final MockPart namePart = new MockPart("name", "book store".getBytes());
+    private final MockPart sloganPart = new MockPart("slogan", "The best tech books".getBytes());
+    private final MockPart adminNamePart = new MockPart("adminName", "karol marques".getBytes());
+    private final MockPart usernamePart = new MockPart("username", "karol.marques".getBytes());
+    private final MockPart passwordPart = new MockPart("password", "12345678".getBytes());
+
     @BeforeEach
-    void setup() {
+    void setup() throws JsonProcessingException {
         objectMapper = new ObjectMapper();
 
-        RegisterUserDTO registerUserDTO = RegisterUserDTO.builder()
-                .name("karol marques")
+        registerStoreDTO = RegisterStoreDTO.builder()
+                .adminName("karol marques")
                 .username("karol.marques")
                 .password("12345678")
-                .build();
-
-        registerStoreDTO = RegisterStoreDTO.builder()
-                .admin(registerUserDTO)
                 .name("book store")
-                .banner(null)
                 .slogan("The best tech books")
                 .build();
 
@@ -82,9 +92,14 @@ class AuthControllerTest {
                             .build()
             );
 
-            mockMvc.perform(post("/v1/auth/register")
-                            .content(objectMapper.writeValueAsString(registerStoreDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(multipart("/v1/auth/register")
+                            .file(bannerFile)
+                            .part(namePart)
+                            .part(sloganPart)
+                            .part(adminNamePart)
+                            .part(usernamePart)
+                            .part(passwordPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA))
                     .andExpect(jsonPath("token").value("token"))
                     .andExpect(jsonPath("refreshToken").value("refresh-token"))
                     .andExpect(jsonPath("user").exists())
@@ -97,11 +112,16 @@ class AuthControllerTest {
         @Test
         void mustReturnConflictIfUserAlreadyExist() throws Exception {
             when(authService.register(registerStoreDTO)).thenThrow(
-                    new UsernameAlreadyExist(registerStoreDTO.getAdmin().getUsername()));
+                    new UsernameAlreadyExist(registerStoreDTO.getUsername()));
 
-            mockMvc.perform(post("/v1/auth/register")
-                            .content(objectMapper.writeValueAsString(registerStoreDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(multipart("/v1/auth/register")
+                            .file(bannerFile)
+                            .part(namePart)
+                            .part(sloganPart)
+                            .part(adminNamePart)
+                            .part(usernamePart)
+                            .part(passwordPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA))
                     .andExpect(status().isConflict());
 
             verify(authService, times(1)).register(registerStoreDTO);
@@ -112,9 +132,14 @@ class AuthControllerTest {
             when(authService.register(registerStoreDTO)).thenThrow(
                     new StoreAlreadyExist(registerStoreDTO.getName()));
 
-            mockMvc.perform(post("/v1/auth/register")
-                            .content(objectMapper.writeValueAsString(registerStoreDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(multipart("/v1/auth/register")
+                            .file(bannerFile)
+                            .part(namePart)
+                            .part(sloganPart)
+                            .part(adminNamePart)
+                            .part(usernamePart)
+                            .part(passwordPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA))
                     .andExpect(status().isConflict());
 
             verify(authService, times(1)).register(registerStoreDTO);
@@ -123,10 +148,16 @@ class AuthControllerTest {
         @Test
         void shouldReturnBadRequestWhenRequestBodyIsIncorrect() throws Exception {
             registerStoreDTO = RegisterStoreDTO.builder().build();
+             MockPart invaldUsernamePart = new MockPart("username", "".getBytes());
 
-            mockMvc.perform(post("/v1/auth/register")
-                            .content(objectMapper.writeValueAsString(registerStoreDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(multipart("/v1/auth/register")
+                            .file(bannerFile)
+                            .part(namePart)
+                            .part(sloganPart)
+                            .part(adminNamePart)
+                            .part(invaldUsernamePart)
+                            .part(passwordPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA))
                     .andExpect(status().isBadRequest());
 
             verify(authService, times(0)).register(registerStoreDTO);
@@ -134,11 +165,16 @@ class AuthControllerTest {
 
         @Test
         void shouldReturnBadRequestWhenPasswordIsLessThanSix() throws Exception {
-            registerStoreDTO.getAdmin().setPassword("123");
+            MockPart invalidPassword = new MockPart("password", "123".getBytes());
 
-            mockMvc.perform(post("/v1/auth/register")
-                            .content(objectMapper.writeValueAsString(registerStoreDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(multipart("/v1/auth/register")
+                            .file(bannerFile)
+                            .part(namePart)
+                            .part(sloganPart)
+                            .part(adminNamePart)
+                            .part(usernamePart)
+                            .part(invalidPassword)
+                            .contentType(MediaType.MULTIPART_FORM_DATA))
                     .andExpect(status().isBadRequest());
 
             verify(authService, times(0)).register(registerStoreDTO);

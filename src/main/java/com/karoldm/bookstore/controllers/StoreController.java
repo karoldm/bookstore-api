@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,7 +43,7 @@ public class StoreController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value="/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "update a store",
             description = "allow admin update your own store")
@@ -56,7 +57,7 @@ public class StoreController {
     @PreAuthorize("@storeSecurityService.isStoreAdmin(principal, #id)")
     ResponseEntity<ResponseStoreDTO> updateStore(
             @PathVariable Long id,
-            @RequestBody @Valid UpdateStoreDTO updateStoreDTO,
+            @ModelAttribute @Valid UpdateStoreDTO updateStoreDTO,
             @AuthenticationPrincipal Object principal
     ) {
         ResponseStoreDTO response = storeService.updateStore(id, updateStoreDTO);

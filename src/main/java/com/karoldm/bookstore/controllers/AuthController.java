@@ -12,12 +12,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
 @RestController
@@ -25,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private AuthService authService;
 
-    @PostMapping("/register")
+    @PostMapping(value="/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "register a new store account",
             description = "register new store and, consequently, new admin user")
@@ -35,7 +33,7 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "password with less than 6 char or name, username or slogan blank",
                     content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
     })
-    ResponseEntity<ResponseAuthDTO> register(@RequestBody @Valid RegisterStoreDTO registerDTO) throws Exception {
+    ResponseEntity<ResponseAuthDTO> register(@ModelAttribute @Valid RegisterStoreDTO registerDTO) throws Exception {
         ResponseAuthDTO response = authService.register(registerDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

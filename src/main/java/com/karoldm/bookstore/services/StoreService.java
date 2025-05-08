@@ -15,6 +15,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class StoreService {
     private StoreRepository storeRepository;
+    private FileStorageService fileStorageService;
 
     public ResponseStoreDTO getStore(Long id) {
         Optional<Store> optionalStore = storeRepository.findById(id);
@@ -43,8 +44,15 @@ public class StoreService {
 
         Store store = optionalStore.get();
 
+        if(updateStoreDTO.getBanner() != null) {
+            if(store.getBanner() != null){
+                fileStorageService.removeFileByUrl(store.getBanner());
+            }
+            String url = fileStorageService.uploadFile(updateStoreDTO.getBanner());
+            store.setBanner(url);
+        }
+
         store.setName(updateStoreDTO.getName());
-        store.setBanner(updateStoreDTO.getBanner());
         store.setSlogan(updateStoreDTO.getSlogan());
 
         storeRepository.save(store);

@@ -20,10 +20,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockPart;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.Optional;
 
@@ -62,20 +66,19 @@ class StoreControllerTest {
     private AppUser wrongAdmin;
     private AppUser wrongEmployee;
     private AppUser commonUser;
-    private UpdateStoreDTO updateStoreDTO;
 
-    private ObjectMapper objectMapper;
+    final private MockMultipartFile coverFile = new MockMultipartFile(
+            "banner",
+            "test-image.jpg",
+            "image/jpeg",
+            new byte[0]
+    );
+    final private MockPart namePart = new MockPart("name", "bookstore".getBytes());
+    final private MockPart sloganPart = new MockPart("slogan", "An amazing bookstore".getBytes());
+
 
     @BeforeEach
     void setup() {
-        objectMapper = new ObjectMapper();
-
-        updateStoreDTO = UpdateStoreDTO.builder()
-                .name("my store")
-                .banner(null)
-                .slogan("The best tech books")
-                .build();
-
         commonUser = AppUser.builder()
                 .id(2L)
                 .name("common user")
@@ -300,14 +303,17 @@ class StoreControllerTest {
     class UpdateStoreTests {
         @Test
         void mustReturnForbiddenWhenNoTokenProvided() throws Exception {
-            mockMvc.perform(put("/v1/store/" + testStoreId)
-                            .content(objectMapper.writeValueAsString(updateStoreDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(MockMvcRequestBuilders.multipart(
+                    HttpMethod.PUT, "/v1/store/" + testStoreId)
+                            .file(coverFile)
+                            .part(namePart)
+                            .part(sloganPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA))
                     .andExpect(status().isForbidden());
 
             verify(appUserRepository, never()).findByUsername(any());
             verify(storeSecurityService, never()).isStoreAdmin(any(), any());
-            verify(storeService, never()).updateStore(testStoreId, updateStoreDTO);
+            verify(storeService, never()).updateStore(any(), any());
         }
 
         @Test
@@ -315,15 +321,18 @@ class StoreControllerTest {
             when(tokenService.validateToken("invalid-token"))
                     .thenThrow(new JWTVerificationException("Invalid token"));
 
-            mockMvc.perform(put("/v1/store/" + testStoreId)
-                            .header("Authorization", "invalid-token")
-                            .content(objectMapper.writeValueAsString(updateStoreDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(MockMvcRequestBuilders.multipart(
+                                    HttpMethod.PUT, "/v1/store/" + testStoreId)
+                            .file(coverFile)
+                            .part(namePart)
+                            .part(sloganPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .header("Authorization", "invalid-token"))
                     .andExpect(status().isForbidden());
 
             verify(appUserRepository, never()).findByUsername(any());
             verify(storeSecurityService, never()).isStoreAdmin(any(), any());
-            verify(storeService, never()).updateStore(testStoreId, updateStoreDTO);
+            verify(storeService, never()).updateStore(any(), any());
         }
 
         @Test
@@ -334,10 +343,13 @@ class StoreControllerTest {
                     Optional.of(commonUser)
             );
 
-            mockMvc.perform(put("/v1/store/" + testStoreId)
-                            .header("Authorization", validToken)
-                            .content(objectMapper.writeValueAsString(updateStoreDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(MockMvcRequestBuilders.multipart(
+                                    HttpMethod.PUT, "/v1/store/" + testStoreId)
+                            .file(coverFile)
+                            .part(namePart)
+                            .part(sloganPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .header("Authorization", validToken))
                     .andExpect(status().isForbidden());
 
             verify(appUserRepository, times(1))
@@ -345,7 +357,7 @@ class StoreControllerTest {
 
             verify(storeSecurityService, never()).isStoreAdmin(any(), any());
 
-            verify(storeService, never()).updateStore(testStoreId, updateStoreDTO);
+            verify(storeService, never()).updateStore(any(), any());
         }
 
         @Test
@@ -358,10 +370,13 @@ class StoreControllerTest {
 
             when(storeSecurityService.isStoreAdmin(wrongAdmin, testStoreId)).thenReturn(false);
 
-            mockMvc.perform(put("/v1/store/" + testStoreId)
-                            .header("Authorization", validToken)
-                            .content(objectMapper.writeValueAsString(updateStoreDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(MockMvcRequestBuilders.multipart(
+                                    HttpMethod.PUT, "/v1/store/" + testStoreId)
+                            .file(coverFile)
+                            .part(namePart)
+                            .part(sloganPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .header("Authorization", validToken))
                     .andExpect(status().isForbidden());
 
             verify(appUserRepository, times(1))
@@ -370,7 +385,7 @@ class StoreControllerTest {
             verify(storeSecurityService, times(1))
                     .isStoreAdmin(wrongAdmin, testStoreId);
 
-            verify(storeService, never()).updateStore(testStoreId, updateStoreDTO);
+            verify(storeService, never()).updateStore(any(), any());
         }
 
         @Test
@@ -383,13 +398,16 @@ class StoreControllerTest {
 
             when(storeSecurityService.isStoreAdmin(admin, testStoreId)).thenReturn(true);
 
-            when(storeService.updateStore(testStoreId, updateStoreDTO))
+            when(storeService.updateStore(any(), any()))
                     .thenReturn(responseStoreDTO);
 
-            mockMvc.perform(put("/v1/store/" + testStoreId)
-                            .header("Authorization", validToken)
-                            .content(objectMapper.writeValueAsString(updateStoreDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(MockMvcRequestBuilders.multipart(
+                                    HttpMethod.PUT, "/v1/store/" + testStoreId)
+                            .file(coverFile)
+                            .part(namePart)
+                            .part(sloganPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .header("Authorization", validToken))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("banner").value(responseStoreDTO.getBanner()))
                     .andExpect(jsonPath("name").value(responseStoreDTO.getName()))
@@ -402,7 +420,7 @@ class StoreControllerTest {
             verify(appUserRepository, times(1))
                     .findByUsername(admin.getUsername());
 
-            verify(storeService, times(1)).updateStore(testStoreId, updateStoreDTO);
+            verify(storeService, times(1)).updateStore(any(), any());
         }
 
         @Test
@@ -414,10 +432,13 @@ class StoreControllerTest {
                     Optional.of(wrongEmployee)
             );
 
-            mockMvc.perform(put("/v1/store/" + testStoreId)
-                            .header("Authorization", validToken)
-                            .content(objectMapper.writeValueAsString(updateStoreDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(MockMvcRequestBuilders.multipart(
+                                    HttpMethod.PUT, "/v1/store/" + testStoreId)
+                            .file(coverFile)
+                            .part(namePart)
+                            .part(sloganPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .header("Authorization", validToken))
                     .andExpect(status().isForbidden());
 
             verify(appUserRepository, times(1))
@@ -426,7 +447,7 @@ class StoreControllerTest {
             verify(storeSecurityService, never())
                     .isStoreAdmin(wrongEmployee, testStoreId);
 
-            verify(storeService, never()).updateStore(testStoreId, updateStoreDTO);
+            verify(storeService, never()).updateStore(any(), any());
         }
 
         @Test
@@ -438,10 +459,13 @@ class StoreControllerTest {
                     Optional.of(employee)
             );
 
-            mockMvc.perform(put("/v1/store/" + testStoreId)
-                            .header("Authorization", validToken)
-                            .content(objectMapper.writeValueAsString(updateStoreDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(MockMvcRequestBuilders.multipart(
+                                    HttpMethod.PUT, "/v1/store/" + testStoreId)
+                            .file(coverFile)
+                            .part(namePart)
+                            .part(sloganPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .header("Authorization", validToken))
                     .andExpect(status().isForbidden());
 
             verify(appUserRepository, times(1))
@@ -450,7 +474,7 @@ class StoreControllerTest {
             verify(storeSecurityService, never())
                     .isStoreAdmin(employee, testStoreId);
 
-            verify(storeService, never()).updateStore(testStoreId, updateStoreDTO);
+            verify(storeService, never()).updateStore(any(), any());
         }
 
         @Test
@@ -463,12 +487,15 @@ class StoreControllerTest {
 
             when(storeSecurityService.isStoreAdmin(admin, testStoreId)).thenReturn(true);
 
-            UpdateStoreDTO invalidUpdateStoreDTO = UpdateStoreDTO.builder().build();
+            MockPart invalidName = new MockPart("name", "".getBytes());
 
-            mockMvc.perform(put("/v1/store/" + testStoreId)
-                            .header("Authorization", validToken)
-                            .content(objectMapper.writeValueAsString(invalidUpdateStoreDTO))
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(MockMvcRequestBuilders.multipart(
+                                    HttpMethod.PUT, "/v1/store/" + testStoreId)
+                            .file(coverFile)
+                            .part(invalidName)
+                            .part(sloganPart)
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .header("Authorization", validToken))
                     .andExpect(status().isBadRequest());
 
             verify(storeSecurityService, never()).isStoreAdmin(admin, testStoreId);
@@ -476,7 +503,7 @@ class StoreControllerTest {
             verify(appUserRepository, times(1))
                     .findByUsername(admin.getUsername());
 
-            verify(storeService, never()).updateStore(testStoreId, invalidUpdateStoreDTO);
+            verify(storeService, never()).updateStore(any(), any());
         }
     }
 }

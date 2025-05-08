@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 
 import java.util.Optional;
 
@@ -25,6 +26,9 @@ public class StoreServiceTest {
     @Mock
     private StoreRepository storeRepository;
 
+    @Mock
+    private FileStorageService fileStorageService;
+
     @InjectMocks
     private StoreService storeService;
 
@@ -33,16 +37,22 @@ public class StoreServiceTest {
 
     @BeforeEach
     void setup() {
+        MockMultipartFile mockMultipartFile = new MockMultipartFile(
+                "image",
+                "test-image.jpg",
+                "image/jpeg",
+                new byte[0]
+        );
         updateStoreDTO = UpdateStoreDTO.builder()
                 .name("store updated")
                 .slogan("slogan updated")
-                .banner("base64image")
+                .banner(mockMultipartFile)
                 .build();
 
         store = Store.builder()
                 .name("bookstore")
                 .slogan("The best tech books")
-                .banner(null)
+                .banner("image-url")
                 .id(1L)
                 .build();
     }
@@ -50,7 +60,7 @@ public class StoreServiceTest {
     @Nested
     class GetStoreTests {
         @Test
-        void shouldThrowNotFoundWhenStoreDoesNotExist() {
+        void mustThrowNotFoundWhenStoreDoesNotExist() {
             Long id = 1L;
 
             when(storeRepository.findById(id)).thenReturn(Optional.empty());
@@ -64,7 +74,7 @@ public class StoreServiceTest {
         }
 
         @Test
-        void shouldReturnStore() {
+        void mustReturnStore() {
             when(storeRepository.findById(store.getId())).thenReturn(Optional.of(store));
 
             ResponseStoreDTO responseStoreDTO = storeService.getStore(store.getId());
@@ -81,7 +91,7 @@ public class StoreServiceTest {
     class UpdateStoreTests {
 
         @Test
-        void shouldThrowNotFoundWhenStoreDoesNotExist() {
+        void mustThrowNotFoundWhenStoreDoesNotExist() {
             Long id = 1L;
 
             when(storeRepository.findById(id)).thenReturn(Optional.empty());
@@ -95,9 +105,9 @@ public class StoreServiceTest {
         }
 
         @Test
-        void shouldUpdateStore() {
+        void mustUpdateStore() {
             when(storeRepository.findById(store.getId())).thenReturn(Optional.of(store));
-
+            when(fileStorageService.uploadFile(any())).thenReturn("image-url");
             ResponseStoreDTO responseStoreDTO = storeService.updateStore(store.getId(), updateStoreDTO);
 
             assertEquals(store.getId(), responseStoreDTO.getId());
@@ -106,6 +116,8 @@ public class StoreServiceTest {
             assertEquals(store.getBanner(), responseStoreDTO.getBanner());
             verify(storeRepository, times(1)).findById(store.getId());
             verify(storeRepository, times(1)).save(store);
+            verify(fileStorageService, times(1)).uploadFile(any());
+            verify(fileStorageService, times(1)).removeFileByUrl(any());
         }
     }
 }
