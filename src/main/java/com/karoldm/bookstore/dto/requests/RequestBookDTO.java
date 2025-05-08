@@ -1,6 +1,5 @@
 package com.karoldm.bookstore.dto.requests;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;

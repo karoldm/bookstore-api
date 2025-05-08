@@ -1,8 +1,6 @@
 package com.karoldm.bookstore.controllers;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.karoldm.bookstore.dto.requests.UpdateStoreDTO;
 import com.karoldm.bookstore.dto.responses.ResponseStoreDTO;
 import com.karoldm.bookstore.entities.AppUser;
 import com.karoldm.bookstore.entities.Store;
@@ -34,7 +32,6 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

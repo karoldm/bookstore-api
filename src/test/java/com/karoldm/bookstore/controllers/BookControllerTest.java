@@ -4,7 +4,6 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.karoldm.bookstore.dto.requests.BooksFilterDTO;
-import com.karoldm.bookstore.dto.requests.RequestBookDTO;
 import com.karoldm.bookstore.dto.requests.UpdateBookAvailableDTO;
 import com.karoldm.bookstore.dto.responses.ResponseBookDTO;
 import com.karoldm.bookstore.entities.AppUser;
