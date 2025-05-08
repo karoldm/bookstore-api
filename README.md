@@ -33,6 +33,7 @@ API de Gerenciamento de livrarias! Esta API foi desenvolvida utilizando Spring B
 - **Spring Data JPA**: Para persistência de dados e interação com o banco de dados.
 - **JWT (JSON Web Tokens)**: Para autenticação segura.
 - **Swagger**: Para documentação da API.
+- **AWS S3**: Para armazenamento das imagens.
 - **Banco de Dados**: Foi utilizado um banco de dados relacional PostgreSQL para armazenar as informações necessárias.
 
 ## Como Executar o Projeto
@@ -53,16 +54,34 @@ API de Gerenciamento de livrarias! Esta API foi desenvolvida utilizando Spring B
 2. **Configure o arquivo application.properties:**
     ```bash
     spring.application.name=bookstore
-    server.port=9000
-    spring.datasource.url=jdbc:postgresql://localhost:5432/bookstore
-    spring.datasource.username=username
-    spring.datasource.password=password
-    spring.jpa.hibernate.ddl-auto=update
-    spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
-    spring.jpa.show-sql=true
-    spring.web.resources.static-locations=classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
-    api.security.token.secret=jwt_token
+   server.port=9000
+   
+   api.security.token.expiration=4
+   api.security.token.refresh-expiration=168
+   
+   spring.jpa.show-sql=true
+   spring.jpa.hibernate.ddl-auto=update
+   
+   spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
+   spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+   
+   spring.web.resources.static-locations=classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
+   
+   spring.profiles.active=dev
    ```
+ 
+ **Configure o arquivo application-dev.properties:**
+   ```bash
+   spring.datasource.url=jdbc:postgresql://localhost:5432/bookstore
+   spring.datasource.username=postgres
+   spring.datasource.password=root
+   api.security.token.secret="JWT-TOKEN"
+   
+   api.aws.access-key=YOUR_ACCESS_KEY
+   api.aws.secret-key=YOUR_SECRET_KEY
+   api.aws.bucket-url=YOUR_BUCKET_URL
+   ```
+
 3. **Excecute o projeto**
    - A API estará disponível em http://localhost:9000.
    - A documentação Swagger estará disponível em http://localhost:9000/swagger-ui.html.
