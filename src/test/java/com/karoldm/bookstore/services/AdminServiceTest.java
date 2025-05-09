@@ -33,6 +33,8 @@ public class AdminServiceTest {
     private AppUserRepository userRepository;
     @Mock
     private StoreRepository storeRepository;
+    @Mock
+    private FileStorageService fileStorageService;
 
     private AppUser admin;
     private AppUser employee;
