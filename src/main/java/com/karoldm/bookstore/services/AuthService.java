@@ -1,8 +1,10 @@
 package com.karoldm.bookstore.services;
 
 import com.karoldm.bookstore.dto.requests.LoginRequestDTO;
+import com.karoldm.bookstore.dto.requests.RefreshTokenDTO;
 import com.karoldm.bookstore.dto.requests.RegisterStoreDTO;
 import com.karoldm.bookstore.dto.responses.ResponseAuthDTO;
+import com.karoldm.bookstore.dto.responses.ResponseRefreshTokenDTO;
 import com.karoldm.bookstore.dto.responses.ResponseStoreDTO;
 import com.karoldm.bookstore.dto.responses.ResponseUserDTO;
 import com.karoldm.bookstore.entities.AppUser;
@@ -36,6 +38,18 @@ public class AuthService implements UserDetailsService {
     private TokenService tokenService;
     private final AuthenticationConfiguration authenticationConfiguration;
     private FileStorageService fileStorageService;
+
+    public ResponseRefreshTokenDTO refreshToken(RefreshTokenDTO refreshTokenDTO){
+        String username = tokenService.validateToken(refreshTokenDTO.getRefreshToken());
+
+                String newAccessToken = tokenService.generateToken(username);
+        String newRefreshToken = tokenService.generateRefreshToken(username);
+
+        return ResponseRefreshTokenDTO.builder()
+                .token(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .build();
+    }
 
     @Transactional
     public ResponseAuthDTO register(@NotNull RegisterStoreDTO registerDTO) throws Exception {
@@ -137,6 +151,7 @@ public class AuthService implements UserDetailsService {
                 .username(appUser.getUsername())
                 .name(appUser.getName())
                 .role(appUser.getRole().name())
+                .id(appUser.getId())
                 .build();
 
         Store store;

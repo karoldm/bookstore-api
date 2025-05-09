@@ -1,8 +1,10 @@
 package com.karoldm.bookstore.controllers;
 
 import com.karoldm.bookstore.dto.requests.LoginRequestDTO;
+import com.karoldm.bookstore.dto.requests.RefreshTokenDTO;
 import com.karoldm.bookstore.dto.requests.RegisterStoreDTO;
 import com.karoldm.bookstore.dto.responses.ResponseAuthDTO;
+import com.karoldm.bookstore.dto.responses.ResponseRefreshTokenDTO;
 import com.karoldm.bookstore.services.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,7 +25,21 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private AuthService authService;
 
-    @PostMapping(value="/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping("/refresh")
+    @Operation(
+            summary = "refresh tokens",
+            description = "return a new token when refresh-token is valid")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "generated successfully"),
+            @ApiResponse(responseCode = "413", description = "refresh token is invalid or expired",
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+    })
+    public ResponseEntity<ResponseRefreshTokenDTO> refreshToken(@RequestBody RefreshTokenDTO refreshTokenDTO) {
+        ResponseRefreshTokenDTO responseRefreshTokenDTO = authService.refreshToken(refreshTokenDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(responseRefreshTokenDTO);
+    }
+
+    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "register a new store account",
             description = "register new store and, consequently, new admin user")
