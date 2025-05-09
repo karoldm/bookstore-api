@@ -22,6 +22,7 @@ import java.util.Set;
 public class AdminService {
     private AppUserRepository userRepository;
     private StoreRepository storeRepository;
+    private FileStorageService fileStorageService;
 
     @Transactional
     public ResponseUserDTO updateAccount(AppUser user, UpdateUserDTO updateUserDTO) {
@@ -66,6 +67,8 @@ public class AdminService {
 
         Set<AppUser> employees = userRepository.findByStoreAndRole(store, Roles.EMPLOYEE);
         userRepository.deleteAll(employees);
+
+        fileStorageService.removeFileByUrl(store.getBanner());
 
         storeRepository.delete(store);
 
