@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -17,6 +18,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableConfigurationProperties
@@ -24,12 +28,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
     private final SecurityFilter securityFilter;
+    private final CorsConfigurationSource corsConfigurationSource;
+    private final Environment env;
 
     private static final String STORE_PATH = "/v1/store/*";
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 // CSRF disabled because we're stateless JWT API
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session ->
@@ -50,20 +57,29 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, STORE_PATH).hasRole(Roles.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, STORE_PATH).hasRole(Roles.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, STORE_PATH).hasAnyRole(Roles.ADMIN.name(), Roles.EMPLOYEE.name())
-                        .requestMatchers(HttpMethod.PUT, STORE_PATH+"/book/*/available").hasAnyRole(Roles.EMPLOYEE.name(), Roles.ADMIN.name())
-                        .requestMatchers(HttpMethod.PUT, STORE_PATH+"/book/*").hasRole(Roles.ADMIN.name())
-                        .requestMatchers(HttpMethod.POST, STORE_PATH+"/book").hasRole(Roles.ADMIN.name())
-                        .requestMatchers(HttpMethod.DELETE, STORE_PATH+"/book/*").hasRole(Roles.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, STORE_PATH+"/book").hasAnyRole(Roles.ADMIN.name(), Roles.EMPLOYEE.name())
-                        .requestMatchers(HttpMethod.GET, STORE_PATH+"/employee").hasRole(Roles.ADMIN.name())
-                        .requestMatchers(HttpMethod.POST, STORE_PATH+"/employee").hasRole(Roles.ADMIN.name())
-                        .requestMatchers(HttpMethod.PUT, STORE_PATH+"/employee/*").hasRole(Roles.ADMIN.name())
-                        .requestMatchers(HttpMethod.DELETE, STORE_PATH+"/employee/*").hasRole(Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, STORE_PATH + "/book/*/available").hasAnyRole(Roles.EMPLOYEE.name(), Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, STORE_PATH + "/book/*").hasRole(Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, STORE_PATH + "/book").hasRole(Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, STORE_PATH + "/book/*").hasRole(Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, STORE_PATH + "/book").hasAnyRole(Roles.ADMIN.name(), Roles.EMPLOYEE.name())
+                        .requestMatchers(HttpMethod.GET, STORE_PATH + "/employee").hasRole(Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, STORE_PATH + "/employee").hasRole(Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, STORE_PATH + "/employee/*").hasRole(Roles.ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, STORE_PATH + "/employee/*").hasRole(Roles.ADMIN.name())
                         .requestMatchers(HttpMethod.PUT, "/v1/admin").hasRole(Roles.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/v1/admin").hasRole(Roles.ADMIN.name())
                         .anyRequest().authenticated()// Authenticated for all other endpoints
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // only https in prod
+        if (Arrays.asList(env.getActiveProfiles()).contains("prod")) {
+            httpSecurity
+                    .requiresChannel(channel -> channel
+                            .requestMatchers(r -> r.getHeader("X-Forwarded-Proto") != null)
+                            .requiresSecure()
+                    );
+        }
 
         return httpSecurity.build();
     }

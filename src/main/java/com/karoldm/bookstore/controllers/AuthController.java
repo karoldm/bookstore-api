@@ -39,7 +39,10 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(responseRefreshTokenDTO);
     }
 
-    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(
+            value = "/register",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     @Operation(
             summary = "register a new store account",
             description = "register new store and, consequently, new admin user")

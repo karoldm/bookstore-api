@@ -49,7 +49,7 @@ public class SecurityFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } catch (JWTVerificationException ex) {
-            response.setStatus(HttpStatus.FORBIDDEN.value());
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.getWriter().write(
                     "{\"error\":\"Invalid token\",\"message\":\"" + ex.getMessage() + "\"}"
             );
