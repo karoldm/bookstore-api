@@ -204,7 +204,7 @@ class BookControllerTest {
 
             mockMvc.perform(get(baseURL)
                             .header("Authorization", "invalid-token"))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized());
 
             verify(appUserRepository, never()).findByUsername(any());
             verify(storeSecurityService, never()).canAccessStore(any(), any());
@@ -430,7 +430,7 @@ class BookControllerTest {
                             .part(authorPart)
                             .contentType(MediaType.MULTIPART_FORM_DATA)
                             .header("Authorization", "invalid-token"))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized());
 
             verify(appUserRepository, never()).findByUsername(any());
             verify(storeSecurityService, never()).isStoreAdmin(any(), any());
@@ -658,7 +658,7 @@ class BookControllerTest {
             mockMvc.perform(delete(baseURL + "/" + testBookId)
                             .header("Authorization", "invalid-token")
                             .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized());
 
             verify(appUserRepository, never()).findByUsername(any());
             verify(storeSecurityService, never()).isStoreAdmin(any(), any());
@@ -805,7 +805,7 @@ class BookControllerTest {
                             .header("Authorization", "invalid-token")
                             .content(objectMapper.writeValueAsString(updateBookAvailableDTO))
                             .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized());
 
             verify(appUserRepository, never()).findByUsername(any());
             verify(storeSecurityService, never()).canAccessStore(any(), any());
@@ -1031,7 +1031,7 @@ class BookControllerTest {
                             .part(authorPart)
                             .contentType(MediaType.MULTIPART_FORM_DATA)
                             .header("Authorization", "invalid-token"))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized());
 
             verify(appUserRepository, never()).findByUsername(any());
             verify(storeSecurityService, never()).isStoreAdmin(any(), any());

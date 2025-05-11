@@ -159,7 +159,7 @@ class StoreControllerTest {
 
             mockMvc.perform(get("/v1/store/" + testStoreId)
                             .header("Authorization", "invalid-token"))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized());
 
             verify(appUserRepository, never()).findByUsername(any());
             verify(storeSecurityService, never()).canAccessStore(any(), any());
@@ -325,7 +325,7 @@ class StoreControllerTest {
                             .part(sloganPart)
                             .contentType(MediaType.MULTIPART_FORM_DATA)
                             .header("Authorization", "invalid-token"))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized());
 
             verify(appUserRepository, never()).findByUsername(any());
             verify(storeSecurityService, never()).isStoreAdmin(any(), any());

@@ -135,7 +135,7 @@ class AdminControllerTest {
                             .header("Authorization", "invalid-token")
                             .content(objectMapper.writeValueAsString(updateUserDTO))
                             .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized());
 
             verify(appUserRepository, never()).findByUsername(any());
             verify(adminService, never()).updateAccount(any(), any());
@@ -230,7 +230,7 @@ class AdminControllerTest {
             mockMvc.perform(delete(baseURL)
                             .header("Authorization", "invalid-token")
                             .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized());
 
             verify(appUserRepository, never()).findByUsername(any());
             verify(adminService, never()).deleteAccount(any());

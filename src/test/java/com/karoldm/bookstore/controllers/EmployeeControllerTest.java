@@ -174,7 +174,7 @@ class EmployeeControllerTest {
 
             mockMvc.perform(get(baseURL)
                             .header("Authorization", "invalid-token"))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized());
 
             verify(appUserRepository, never()).findByUsername(any());
             verify(storeSecurityService, never()).isStoreAdmin(any(), any());
@@ -303,7 +303,7 @@ class EmployeeControllerTest {
                             .header("Authorization", "invalid-token")
                             .content(objectMapper.writeValueAsString(updateUserDTO))
                             .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized());
 
             verify(appUserRepository, never()).findByUsername(any());
             verify(storeSecurityService, never()).isStoreAdmin(any(), any());
@@ -437,7 +437,7 @@ class EmployeeControllerTest {
             mockMvc.perform(delete(baseURL + "/" + testEmployeeId)
                             .header("Authorization", "invalid-token")
                             .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized());
 
             verify(appUserRepository, never()).findByUsername(any());
             verify(storeSecurityService, never()).isStoreAdmin(any(), any());
@@ -561,7 +561,7 @@ class EmployeeControllerTest {
                             .header("Authorization", "invalid-token")
                             .content(objectMapper.writeValueAsString(registerUserDTO))
                             .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized());
 
             verify(appUserRepository, never()).findByUsername(any());
             verify(storeSecurityService, never()).isStoreAdmin(any(), any());
