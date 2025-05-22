@@ -68,7 +68,9 @@ public class BookService {
 
         Book book = optionalBook.get();
 
-        fileStorageService.removeFileByUrl(book.getCover());
+        if(book.getCover() != null){
+            fileStorageService.removeFileByUrl(book.getCover());
+        }
 
         bookRepository.delete(book);
     }
