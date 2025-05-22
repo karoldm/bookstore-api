@@ -31,7 +31,7 @@ public class AuthController {
             description = "return a new token when refresh-token is valid")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "generated successfully"),
-            @ApiResponse(responseCode = "413", description = "refresh token is invalid or expired",
+            @ApiResponse(responseCode = "401", description = "refresh token is invalid or expired",
                     content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
     })
     public ResponseEntity<ResponseRefreshTokenDTO> refreshToken(@RequestBody RefreshTokenDTO refreshTokenDTO) {
